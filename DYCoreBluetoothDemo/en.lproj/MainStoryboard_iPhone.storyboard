@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6249" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="2">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6243"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="5">
+            <objects>
+                <viewController id="2" customClass="ViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="6EN-lc-ZpB"/>
+                        <viewControllerLayoutGuide type="bottom" id="Ar6-ND-c9V"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="3">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tkB-zF-hyK">
+                                <rect key="frame" x="115" y="198" width="90" height="30"/>
+                                <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <state key="normal" title="1.Scan">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="btnBLE_Scan:" destination="2" eventType="touchUpInside" id="R1k-kk-Dgy"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kIQ-ib-VAA">
+                                <rect key="frame" x="115" y="236" width="90" height="30"/>
+                                <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <state key="normal" title="2.reConnect">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="btnBLE_reConnect:" destination="2" eventType="touchUpInside" id="ZkV-8I-d6C"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="705-9M-e4d">
+                                <rect key="frame" x="115" y="383" width="90" height="30"/>
+                                <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <state key="normal" title="3.Disconnect">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="btnBLE_Disconnect:" destination="2" eventType="touchUpInside" id="J9c-JL-t9z"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bdh-fs-I0U">
+                                <rect key="frame" x="115" y="345" width="90" height="30"/>
+                                <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <state key="normal" title="2.reConnect">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="btnBLE_reConnect2:" destination="2" eventType="touchUpInside" id="o5e-rD-Eek"/>
+                                </connections>
+                            </button>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="AYS-HF-AmF">
+                                <rect key="frame" x="57" y="53" width="206" height="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="bdh-fs-I0U" firstAttribute="trailing" secondItem="kIQ-ib-VAA" secondAttribute="trailing" id="4WC-O4-pYy"/>
+                            <constraint firstItem="tkB-zF-hyK" firstAttribute="trailing" secondItem="kIQ-ib-VAA" secondAttribute="trailing" id="FPI-Si-LS7"/>
+                            <constraint firstItem="kIQ-ib-VAA" firstAttribute="leading" secondItem="tkB-zF-hyK" secondAttribute="leading" id="FgD-a1-bqS"/>
+                            <constraint firstItem="tkB-zF-hyK" firstAttribute="top" secondItem="3" secondAttribute="top" constant="198" id="SvU-lN-PyE"/>
+                            <constraint firstItem="bdh-fs-I0U" firstAttribute="centerX" secondItem="3" secondAttribute="centerX" id="Vyc-xa-yAc"/>
+                            <constraint firstItem="bdh-fs-I0U" firstAttribute="trailing" secondItem="705-9M-e4d" secondAttribute="trailing" id="eQU-SH-hsT"/>
+                            <constraint firstItem="bdh-fs-I0U" firstAttribute="leading" secondItem="kIQ-ib-VAA" secondAttribute="leading" id="fJj-wT-O3g"/>
+                            <constraint firstItem="705-9M-e4d" firstAttribute="top" secondItem="bdh-fs-I0U" secondAttribute="bottom" constant="8" symbolic="YES" id="hf7-vh-uEC"/>
+                            <constraint firstItem="bdh-fs-I0U" firstAttribute="leading" secondItem="705-9M-e4d" secondAttribute="leading" id="i0s-Jw-Rj8"/>
+                            <constraint firstAttribute="bottom" secondItem="705-9M-e4d" secondAttribute="bottom" constant="67" id="iYH-Zg-wRN"/>
+                            <constraint firstItem="kIQ-ib-VAA" firstAttribute="top" secondItem="tkB-zF-hyK" secondAttribute="bottom" constant="8" symbolic="YES" id="mM1-kn-URT"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="receiveData" destination="AYS-HF-AmF" id="LrZ-oU-P8y"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
+            </objects>
+        </scene>
+    </scenes>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination"/>
+    </simulatedMetricsContainer>
+</document>

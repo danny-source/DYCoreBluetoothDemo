@@ -1,0 +1,548 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		30863BA6178E7F5500A5FD98 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30863BA5178E7F5500A5FD98 /* UIKit.framework */; };
+		30863BA8178E7F5500A5FD98 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30863BA7178E7F5500A5FD98 /* Foundation.framework */; };
+		30863BAA178E7F5500A5FD98 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30863BA9178E7F5500A5FD98 /* CoreGraphics.framework */; };
+		30863BB0178E7F5500A5FD98 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 30863BAE178E7F5500A5FD98 /* InfoPlist.strings */; };
+		30863BB2178E7F5500A5FD98 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 30863BB1178E7F5500A5FD98 /* main.m */; };
+		30863BB6178E7F5500A5FD98 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 30863BB5178E7F5500A5FD98 /* AppDelegate.m */; };
+		30863BB8178E7F5500A5FD98 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 30863BB7178E7F5500A5FD98 /* Default.png */; };
+		30863BBA178E7F5500A5FD98 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30863BB9178E7F5500A5FD98 /* Default@2x.png */; };
+		30863BBC178E7F5500A5FD98 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30863BBB178E7F5500A5FD98 /* Default-568h@2x.png */; };
+		30863BBF178E7F5600A5FD98 /* MainStoryboard_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 30863BBD178E7F5600A5FD98 /* MainStoryboard_iPhone.storyboard */; };
+		30863BC5178E7F5600A5FD98 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30863BC4178E7F5600A5FD98 /* ViewController.m */; };
+		30A22FC217E19A2800369BE1 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A22FC117E19A2800369BE1 /* CoreBluetooth.framework */; };
+		30A62B1418024ED00051BA5A /* DYCoreBluetooth.m in Sources */ = {isa = PBXBuildFile; fileRef = 30A62B1318024ED00051BA5A /* DYCoreBluetooth.m */; };
+		30A62B251802751C0051BA5A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 30A62B231802751C0051BA5A /* InfoPlist.strings */; };
+		30A62B271802751C0051BA5A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 30A62B261802751C0051BA5A /* main.m */; };
+		30A62B2B1802751C0051BA5A /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 30A62B291802751C0051BA5A /* Credits.rtf */; };
+		30A62B2E1802751C0051BA5A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 30A62B2D1802751C0051BA5A /* AppDelegate.m */; };
+		30A62B311802751C0051BA5A /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30A62B2F1802751C0051BA5A /* MainMenu.xib */; };
+		30A62B331802751C0051BA5A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 30A62B321802751C0051BA5A /* Images.xcassets */; };
+		30A62B4C180275BF0051BA5A /* DYCoreBluetooth.m in Sources */ = {isa = PBXBuildFile; fileRef = 30A62B1318024ED00051BA5A /* DYCoreBluetooth.m */; };
+		30A62B4E1802786C0051BA5A /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A62B4D1802786C0051BA5A /* IOBluetooth.framework */; };
+		30A62B58180281010051BA5A /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A62B57180281010051BA5A /* AppKit.framework */; };
+		30A62B5A180282B70051BA5A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A62B59180282B70051BA5A /* Cocoa.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		30863BA2178E7F5500A5FD98 /* DYCoreBluetoothDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DYCoreBluetoothDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		30863BA5178E7F5500A5FD98 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		30863BA7178E7F5500A5FD98 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		30863BA9178E7F5500A5FD98 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		30863BAD178E7F5500A5FD98 /* DYCoreBluetoothDemo-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "DYCoreBluetoothDemo-Info.plist"; sourceTree = "<group>"; };
+		30863BAF178E7F5500A5FD98 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		30863BB1178E7F5500A5FD98 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		30863BB3178E7F5500A5FD98 /* DYCoreBluetoothDemo-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DYCoreBluetoothDemo-Prefix.pch"; sourceTree = "<group>"; };
+		30863BB4178E7F5500A5FD98 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		30863BB5178E7F5500A5FD98 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		30863BB7178E7F5500A5FD98 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		30863BB9178E7F5500A5FD98 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		30863BBB178E7F5500A5FD98 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		30863BBE178E7F5600A5FD98 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPhone.storyboard; sourceTree = "<group>"; };
+		30863BC3178E7F5600A5FD98 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		30863BC4178E7F5600A5FD98 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		30A22FC117E19A2800369BE1 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
+		30A62B1218024ED00051BA5A /* DYCoreBluetooth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DYCoreBluetooth.h; sourceTree = "<group>"; };
+		30A62B1318024ED00051BA5A /* DYCoreBluetooth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DYCoreBluetooth.m; sourceTree = "<group>"; };
+		30A62B191802751C0051BA5A /* DYCoreBluetoothOSXDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DYCoreBluetoothOSXDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		30A62B221802751C0051BA5A /* DYCoreBluetoothOSXDemo-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "DYCoreBluetoothOSXDemo-Info.plist"; sourceTree = "<group>"; };
+		30A62B241802751C0051BA5A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		30A62B261802751C0051BA5A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		30A62B281802751C0051BA5A /* DYCoreBluetoothOSXDemo-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DYCoreBluetoothOSXDemo-Prefix.pch"; sourceTree = "<group>"; };
+		30A62B2A1802751C0051BA5A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		30A62B2C1802751C0051BA5A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		30A62B2D1802751C0051BA5A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		30A62B301802751C0051BA5A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		30A62B321802751C0051BA5A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		30A62B4D1802786C0051BA5A /* IOBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetooth.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/IOBluetooth.framework; sourceTree = DEVELOPER_DIR; };
+		30A62B57180281010051BA5A /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/AppKit.framework; sourceTree = DEVELOPER_DIR; };
+		30A62B59180282B70051BA5A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		30863B9F178E7F5500A5FD98 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				30A22FC217E19A2800369BE1 /* CoreBluetooth.framework in Frameworks */,
+				30863BA6178E7F5500A5FD98 /* UIKit.framework in Frameworks */,
+				30863BA8178E7F5500A5FD98 /* Foundation.framework in Frameworks */,
+				30863BAA178E7F5500A5FD98 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		30A62B161802751C0051BA5A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				30A62B5A180282B70051BA5A /* Cocoa.framework in Frameworks */,
+				30A62B58180281010051BA5A /* AppKit.framework in Frameworks */,
+				30A62B4E1802786C0051BA5A /* IOBluetooth.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		30863B99178E7F5500A5FD98 = {
+			isa = PBXGroup;
+			children = (
+				30A62B1118024ED00051BA5A /* DYCoreBluetooth */,
+				30863BAB178E7F5500A5FD98 /* DYCoreBluetoothDemo */,
+				30A62B201802751C0051BA5A /* DYCoreBluetoothOSXDemo */,
+				30863BA4178E7F5500A5FD98 /* Frameworks */,
+				30863BA3178E7F5500A5FD98 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		30863BA3178E7F5500A5FD98 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				30863BA2178E7F5500A5FD98 /* DYCoreBluetoothDemo.app */,
+				30A62B191802751C0051BA5A /* DYCoreBluetoothOSXDemo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		30863BA4178E7F5500A5FD98 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				30A62B59180282B70051BA5A /* Cocoa.framework */,
+				30A62B57180281010051BA5A /* AppKit.framework */,
+				30A62B4D1802786C0051BA5A /* IOBluetooth.framework */,
+				30A22FC117E19A2800369BE1 /* CoreBluetooth.framework */,
+				30863BA5178E7F5500A5FD98 /* UIKit.framework */,
+				30863BA7178E7F5500A5FD98 /* Foundation.framework */,
+				30863BA9178E7F5500A5FD98 /* CoreGraphics.framework */,
+				30A62B1C1802751C0051BA5A /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		30863BAB178E7F5500A5FD98 /* DYCoreBluetoothDemo */ = {
+			isa = PBXGroup;
+			children = (
+				30863BB4178E7F5500A5FD98 /* AppDelegate.h */,
+				30863BB5178E7F5500A5FD98 /* AppDelegate.m */,
+				30863BBD178E7F5600A5FD98 /* MainStoryboard_iPhone.storyboard */,
+				30863BC3178E7F5600A5FD98 /* ViewController.h */,
+				30863BC4178E7F5600A5FD98 /* ViewController.m */,
+				30863BAC178E7F5500A5FD98 /* Supporting Files */,
+			);
+			path = DYCoreBluetoothDemo;
+			sourceTree = "<group>";
+		};
+		30863BAC178E7F5500A5FD98 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				30863BAD178E7F5500A5FD98 /* DYCoreBluetoothDemo-Info.plist */,
+				30863BAE178E7F5500A5FD98 /* InfoPlist.strings */,
+				30863BB1178E7F5500A5FD98 /* main.m */,
+				30863BB3178E7F5500A5FD98 /* DYCoreBluetoothDemo-Prefix.pch */,
+				30863BB7178E7F5500A5FD98 /* Default.png */,
+				30863BB9178E7F5500A5FD98 /* Default@2x.png */,
+				30863BBB178E7F5500A5FD98 /* Default-568h@2x.png */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		30A62B1118024ED00051BA5A /* DYCoreBluetooth */ = {
+			isa = PBXGroup;
+			children = (
+				30A62B1218024ED00051BA5A /* DYCoreBluetooth.h */,
+				30A62B1318024ED00051BA5A /* DYCoreBluetooth.m */,
+			);
+			path = DYCoreBluetooth;
+			sourceTree = "<group>";
+		};
+		30A62B1C1802751C0051BA5A /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		30A62B201802751C0051BA5A /* DYCoreBluetoothOSXDemo */ = {
+			isa = PBXGroup;
+			children = (
+				30A62B2C1802751C0051BA5A /* AppDelegate.h */,
+				30A62B2D1802751C0051BA5A /* AppDelegate.m */,
+				30A62B2F1802751C0051BA5A /* MainMenu.xib */,
+				30A62B321802751C0051BA5A /* Images.xcassets */,
+				30A62B211802751C0051BA5A /* Supporting Files */,
+			);
+			path = DYCoreBluetoothOSXDemo;
+			sourceTree = "<group>";
+		};
+		30A62B211802751C0051BA5A /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				30A62B221802751C0051BA5A /* DYCoreBluetoothOSXDemo-Info.plist */,
+				30A62B231802751C0051BA5A /* InfoPlist.strings */,
+				30A62B261802751C0051BA5A /* main.m */,
+				30A62B281802751C0051BA5A /* DYCoreBluetoothOSXDemo-Prefix.pch */,
+				30A62B291802751C0051BA5A /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		30863BA1178E7F5500A5FD98 /* DYCoreBluetoothDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 30863BC8178E7F5600A5FD98 /* Build configuration list for PBXNativeTarget "DYCoreBluetoothDemo" */;
+			buildPhases = (
+				30863B9E178E7F5500A5FD98 /* Sources */,
+				30863B9F178E7F5500A5FD98 /* Frameworks */,
+				30863BA0178E7F5500A5FD98 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DYCoreBluetoothDemo;
+			productName = DYCoreBluetoothDemo;
+			productReference = 30863BA2178E7F5500A5FD98 /* DYCoreBluetoothDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+		30A62B181802751C0051BA5A /* DYCoreBluetoothOSXDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 30A62B461802751D0051BA5A /* Build configuration list for PBXNativeTarget "DYCoreBluetoothOSXDemo" */;
+			buildPhases = (
+				30A62B151802751C0051BA5A /* Sources */,
+				30A62B161802751C0051BA5A /* Frameworks */,
+				30A62B171802751C0051BA5A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DYCoreBluetoothOSXDemo;
+			productName = DYCoreBluetoothOSXDemo;
+			productReference = 30A62B191802751C0051BA5A /* DYCoreBluetoothOSXDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		30863B9A178E7F5500A5FD98 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0630;
+				ORGANIZATIONNAME = danny;
+			};
+			buildConfigurationList = 30863B9D178E7F5500A5FD98 /* Build configuration list for PBXProject "DYCoreBluetoothDemo" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 30863B99178E7F5500A5FD98;
+			productRefGroup = 30863BA3178E7F5500A5FD98 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				30863BA1178E7F5500A5FD98 /* DYCoreBluetoothDemo */,
+				30A62B181802751C0051BA5A /* DYCoreBluetoothOSXDemo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		30863BA0178E7F5500A5FD98 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				30863BB0178E7F5500A5FD98 /* InfoPlist.strings in Resources */,
+				30863BB8178E7F5500A5FD98 /* Default.png in Resources */,
+				30863BBA178E7F5500A5FD98 /* Default@2x.png in Resources */,
+				30863BBC178E7F5500A5FD98 /* Default-568h@2x.png in Resources */,
+				30863BBF178E7F5600A5FD98 /* MainStoryboard_iPhone.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		30A62B171802751C0051BA5A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				30A62B251802751C0051BA5A /* InfoPlist.strings in Resources */,
+				30A62B331802751C0051BA5A /* Images.xcassets in Resources */,
+				30A62B2B1802751C0051BA5A /* Credits.rtf in Resources */,
+				30A62B311802751C0051BA5A /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		30863B9E178E7F5500A5FD98 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				30A62B1418024ED00051BA5A /* DYCoreBluetooth.m in Sources */,
+				30863BB2178E7F5500A5FD98 /* main.m in Sources */,
+				30863BB6178E7F5500A5FD98 /* AppDelegate.m in Sources */,
+				30863BC5178E7F5600A5FD98 /* ViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		30A62B151802751C0051BA5A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				30A62B2E1802751C0051BA5A /* AppDelegate.m in Sources */,
+				30A62B4C180275BF0051BA5A /* DYCoreBluetooth.m in Sources */,
+				30A62B271802751C0051BA5A /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		30863BAE178E7F5500A5FD98 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				30863BAF178E7F5500A5FD98 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		30863BBD178E7F5600A5FD98 /* MainStoryboard_iPhone.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				30863BBE178E7F5600A5FD98 /* en */,
+			);
+			name = MainStoryboard_iPhone.storyboard;
+			sourceTree = "<group>";
+		};
+		30A62B231802751C0051BA5A /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				30A62B241802751C0051BA5A /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		30A62B291802751C0051BA5A /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				30A62B2A1802751C0051BA5A /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		30A62B2F1802751C0051BA5A /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				30A62B301802751C0051BA5A /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		30863BC6178E7F5600A5FD98 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		30863BC7178E7F5600A5FD98 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		30863BC9178E7F5600A5FD98 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "DYCoreBluetoothDemo/DYCoreBluetoothDemo-Prefix.pch";
+				INFOPLIST_FILE = "DYCoreBluetoothDemo/DYCoreBluetoothDemo-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				TARGETED_DEVICE_FAMILY = 1;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		30863BCA178E7F5600A5FD98 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "DYCoreBluetoothDemo/DYCoreBluetoothDemo-Prefix.pch";
+				INFOPLIST_FILE = "DYCoreBluetoothDemo/DYCoreBluetoothDemo-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				TARGETED_DEVICE_FAMILY = 1;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		30A62B471802751D0051BA5A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_EXPLICIT_OWNERSHIP_TYPE = NO;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
+				CLANG_WARN_OBJC_RECEIVER_WEAK = NO;
+				CLANG_WARN_OBJC_REPEATED_USE_OF_WEAK = NO;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "DYCoreBluetoothOSXDemo/DYCoreBluetoothOSXDemo-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "DYCoreBluetoothOSXDemo/DYCoreBluetoothOSXDemo-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		30A62B481802751D0051BA5A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_EXPLICIT_OWNERSHIP_TYPE = NO;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
+				CLANG_WARN_OBJC_RECEIVER_WEAK = NO;
+				CLANG_WARN_OBJC_REPEATED_USE_OF_WEAK = NO;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "DYCoreBluetoothOSXDemo/DYCoreBluetoothOSXDemo-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "DYCoreBluetoothOSXDemo/DYCoreBluetoothOSXDemo-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		30863B9D178E7F5500A5FD98 /* Build configuration list for PBXProject "DYCoreBluetoothDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				30863BC6178E7F5600A5FD98 /* Debug */,
+				30863BC7178E7F5600A5FD98 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		30863BC8178E7F5600A5FD98 /* Build configuration list for PBXNativeTarget "DYCoreBluetoothDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				30863BC9178E7F5600A5FD98 /* Debug */,
+				30863BCA178E7F5600A5FD98 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		30A62B461802751D0051BA5A /* Build configuration list for PBXNativeTarget "DYCoreBluetoothOSXDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				30A62B471802751D0051BA5A /* Debug */,
+				30A62B481802751D0051BA5A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 30863B9A178E7F5500A5FD98 /* Project object */;
+}
