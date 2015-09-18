@@ -9,7 +9,8 @@
 #import "DYCoreBluetooth.h"
 
 //
-#define kSCAN_TIMEOUT 3.0f	// Timeout value for scanning
+#define kSCAN_TIMEOUT 3.0f  // Timeout value for scanning
+#define kRECONNECT_TIMEOUT 5.0f // Timeout value for scanning
 //TI CC2540/CC2541
 #define TI_UART_SERVICE                                      0xFFF0
 #define TI_UART_RX_PRIMARY_SERVICE_UUID                      0xFFE0  // for STRING RX UUID
@@ -32,7 +33,7 @@
 #define JB_UART_TX_SECOND_UUID                               0xFFF5
 #define JB_UART_TX_WRITE_LEN                                     20  // bytes
 //
-//#define DYBLELOG 1
+#define DYBLELOG 1
 #define BLE_RX_BUFFER_LEN JB_UART_RX_NOTIFICATION_READ_LEN
 #ifdef DYBLELOG
 #define DYCOREBLUETOOTHLog(...) NSLog(@"%s %@", __PRETTY_FUNCTION__, [NSString stringWithFormat:__VA_ARGS__])
@@ -51,12 +52,13 @@
 @implementation DYCoreBluetooth
 {
     CBPeripheral *CBP;
-    NSTimer *scanTimer;
-    NSTimer *reConnectTimer;
-    int writeUartServiceUUID;
-    int writeUartCharacteristicUUID;
+    NSTimer *_scanTimer;
+    NSTimer *_reConnectTimer;
+    int _writeUartServiceUUID;
+    int _writeUartCharacteristicUUID;
     id delegate;
-    CBCentralManager *requireBLEPermission;
+    CBCentralManager *_requireBLEPermission;
+    BOOL    _isReConnectTimeout;
     
 }
 //
@@ -86,8 +88,8 @@
         
         _foundPeripherals = [[NSMutableArray alloc] init];
         _foundAdvertisementData = [[NSMutableArray alloc] init];
-        writeUartServiceUUID=JB_UART_TX_PRIMARY_SERVICE_UUID;
-        writeUartCharacteristicUUID=JB_UART_TX_SECOND_UUID;
+        _writeUartServiceUUID=JB_UART_TX_PRIMARY_SERVICE_UUID;
+        _writeUartCharacteristicUUID=JB_UART_TX_SECOND_UUID;
         isNeedScanningTimeout = NO;
     }
     return self;
@@ -97,14 +99,14 @@
     if (CM.state == CBCentralManagerStatePoweredOn) {
         return NO;
     }
-    requireBLEPermission = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+    _requireBLEPermission = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
     return YES;
 }
 
 #pragma mark - Connection
 
 - (void)connect:(CBPeripheral*)peripheral {
-    
+    _isReConnectTimeout = NO;
 #if MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_9 || __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_7_0
     
     if ([peripheral state] == CBPeripheralStateDisconnected) {
@@ -122,11 +124,13 @@
 }
 
 - (void)connectWithUUIDString:(NSString*)uuidString {
+    _isReConnectTimeout = NO;
     [self reConnect:uuidString];
 }
 
 
 - (void)disconnect:(CBPeripheral*)peripheral {
+    [_reConnectTimer invalidate];
     if (peripheral!=NULL){
         DYCOREBLUETOOTHLog(@"disconnect %@",peripheral.name);
         [CM cancelPeripheralConnection:peripheral];
@@ -142,9 +146,7 @@
 
 
 - (void)reConnect:(NSString*) strUUID {
-    
-    
-    
+    _isReConnectTimeout = NO;
 #if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9 || __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_7_0
     NSUUID *uuid = [[NSUUID UUID] initWithUUIDString:strUUID];
     NSArray *peripheralArray = [CM retrievePeripheralsWithIdentifiers:[NSArray arrayWithObject:uuid]];
@@ -160,11 +162,12 @@
     CFUUIDRef uuid = CFUUIDCreateFromString(nil, (CFStringRef) strUUID);
     [CM retrievePeripherals:[NSArray arrayWithObject:(__bridge id)(uuid) ]];
 #endif
-    reConnectTimer = [NSTimer scheduledTimerWithTimeInterval:kSCAN_TIMEOUT target:self selector:@selector(reConnectTimeout:) userInfo:nil repeats:NO];
+    [_reConnectTimer invalidate];
+    _reConnectTimer = [NSTimer scheduledTimerWithTimeInterval:kRECONNECT_TIMEOUT target:self selector:@selector(reConnectTimeout:) userInfo:nil repeats:NO];
 }
 
 - (void)reConnectWithStringUUIDArray:(NSArray*) uuidStringArray {
-    
+    _isReConnectTimeout = NO;
     NSMutableArray *strCFUUUIDArray=[NSMutableArray array];
     for (NSString *deviceUUIDString in uuidStringArray)
     {
@@ -182,15 +185,14 @@
     }
     
     DYCOREBLUETOOTHLog(@"reConnectWithStringUUIDArray %lu",(unsigned long)uuidStringArray.count);
-    reConnectTimer = [NSTimer scheduledTimerWithTimeInterval:kSCAN_TIMEOUT target:self selector:@selector(reConnectTimeout:) userInfo:nil repeats:NO];
+    _reConnectTimer = [NSTimer scheduledTimerWithTimeInterval:kRECONNECT_TIMEOUT target:self selector:@selector(reConnectTimeout:) userInfo:nil repeats:NO];
 }
 
 - (void)reConnectTimeout:(NSTimer*)timer {
     DYCOREBLUETOOTHLog(@"reConnectTimeout");
-    reConnectTimer=timer;
+    _isReConnectTimeout = YES;
+    _reConnectTimer=timer;
     [self disconnect:connectedPeripheral];
-    DYCOREBLUETOOTHLog(@"%@",connectedPeripheral);
-    [self centralManager:CM didFailToConnectPeripheral:connectedPeripheral error:nil];
 }
 
 - (CBCentralManagerState)getState {
@@ -216,14 +218,14 @@
     if (uuidString==nil){
         [CM scanForPeripheralsWithServices:nil options:options];
     }else{
-        NSArray	*uuidArray	= @[[CBUUID UUIDWithString:uuidString]];
+        NSArray *uuidArray  = @[[CBUUID UUIDWithString:uuidString]];
         [CM scanForPeripheralsWithServices:uuidArray options:options];
     }
     
     if (!isNeedScanningTimeout) {
-    scanTimer=[NSTimer scheduledTimerWithTimeInterval:kSCAN_TIMEOUT target:self selector:@selector(scanTimeout:) userInfo:nil repeats:NO];
+    _scanTimer=[NSTimer scheduledTimerWithTimeInterval:kSCAN_TIMEOUT target:self selector:@selector(scanTimeout:) userInfo:nil repeats:NO];
     }else {
-        [scanTimer invalidate];
+        [_scanTimer invalidate];
     }
 
     
@@ -236,14 +238,14 @@
     }else{
         DYCOREBLUETOOTHLog(@"CM is Null!");
     }
-    [scanTimer invalidate];
+    [_scanTimer invalidate];
     DYCOREBLUETOOTHLog(@"stopScanning");
 }
 
 
 - (void)scanTimeout:(NSTimer*)timer {
     DYCOREBLUETOOTHLog(@"scanTimeout");
-    scanTimer=timer;
+    _scanTimer=timer;
     [self stopScanning];
     if ([[self delegate] respondsToSelector:@selector(didDiscoverPeripheral:)])
     {
@@ -360,7 +362,7 @@
 - (void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral {
     DYCOREBLUETOOTHLog(@"Connect To Peripheral with name: %@\nwith UUID:%@\n",peripheral.name, peripheral.identifier.UUIDString);
     DYCOREBLUETOOTHLog(@"---------------------------------------------------");
-    [reConnectTimer invalidate];
+    [_reConnectTimer invalidate];
     peripheral.delegate=self;
     connectedPeripheral=peripheral;
     connectedPeripheral.delegate=self;
@@ -383,6 +385,7 @@
     //開啟idleTimer
     [UIApplication sharedApplication].idleTimerDisabled=NO;
 #endif
+    [_reConnectTimer invalidate];
     if ([[self delegate] respondsToSelector:@selector(didFailToConnect:error:)])
     {
         [delegate didFailToConnect:peripheral error:error];
@@ -391,8 +394,10 @@
 
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error {
     DYCOREBLUETOOTHLog(@"%@ didDisconnectPeripheral\n",peripheral.name);
-    if (!(peripheral.state == CBPeripheralStateConnected)) {
+    //if (!(peripheral.state == CBPeripheralStateConnected)) {
+    if (_isReConnectTimeout) {
         //連線中或是已斷線的話都將通知傳至FailToConnect，讓重新連線Timeout能夠轉到這
+        _isReConnectTimeout = NO;
         [self centralManager:central didFailToConnectPeripheral:peripheral error:error];
         return;
     }
@@ -762,8 +767,8 @@
 
 - (void)setWriteUARTEnvironmentServiceUUID:(int)serviceUUID characteristicUUID:(int)characteristicUUID
 {
-    writeUartServiceUUID=serviceUUID;
-    writeUartCharacteristicUUID=characteristicUUID;
+    _writeUartServiceUUID=serviceUUID;
+    _writeUartCharacteristicUUID=characteristicUUID;
 }
 
 - (void)writeUART:(NSString *)stringData {
@@ -771,19 +776,19 @@
     NSData* data = [stringData dataUsingEncoding:NSUTF8StringEncoding];
     data = [data subdataWithRange:NSMakeRange(0, [data length])];
     [self writeUARTWithBin:data peripheral:connectedPeripheral];
-    DYCOREBLUETOOTHLog(@"%04x %04x writeUART= (%@)\n",writeUartServiceUUID,writeUartCharacteristicUUID,stringData);
+    DYCOREBLUETOOTHLog(@"%04x %04x writeUART= (%@)\n",_writeUartServiceUUID,_writeUartCharacteristicUUID,stringData);
     
 }
 
 - (void)writeUARTWithDoubleHexString:(NSString *)stringData {
     [self writeUARTWithBin:[self dobuleHexStringToHexData:stringData] peripheral:connectedPeripheral];
-    DYCOREBLUETOOTHLog(@"%04x %04x writeUARTWithDoubleHexString= (%@)\n",writeUartServiceUUID,writeUartCharacteristicUUID,stringData);
+    DYCOREBLUETOOTHLog(@"%04x %04x writeUARTWithDoubleHexString= (%@)\n",_writeUartServiceUUID,_writeUartCharacteristicUUID,stringData);
     
 }
 
 - (void)writeUARTWithBin:(NSData *)data peripheral:(CBPeripheral *)p {
     
-    [self writeValue:[self intUUIDToCBUUID:writeUartServiceUUID] characteristicUUID:[self intUUIDToCBUUID:writeUartCharacteristicUUID] peripheral:p data: data];
+    [self writeValue:[self intUUIDToCBUUID:_writeUartServiceUUID] characteristicUUID:[self intUUIDToCBUUID:_writeUartCharacteristicUUID] peripheral:p data: data];
     
 }
 
@@ -813,11 +818,11 @@
 
 #pragma mark Restoring
 /****************************************************************************/
-/*								Settings									*/
+/*                              Settings                                    */
 /****************************************************************************/
 /* Reload from file. */
 - (void)loadSavedDevices {
-    NSArray	*storedDevices	= [[NSUserDefaults standardUserDefaults] arrayForKey:@"DYStoredDevices"];
+    NSArray *storedDevices  = [[NSUserDefaults standardUserDefaults] arrayForKey:@"DYStoredDevices"];
     
     if (![storedDevices isKindOfClass:[NSArray class]]) {
         DYCOREBLUETOOTHLog(@"No stored array to load");
@@ -844,9 +849,9 @@
 
 
 - (void)addSavedDevice:(CFUUIDRef) uuid {
-    NSArray			*storedDevices	= [[NSUserDefaults standardUserDefaults] arrayForKey:@"DYCoreBluetoothStoredDevices"];
-    NSMutableArray	*newDevices		= nil;
-    CFStringRef		uuidString		= NULL;
+    NSArray         *storedDevices  = [[NSUserDefaults standardUserDefaults] arrayForKey:@"DYCoreBluetoothStoredDevices"];
+    NSMutableArray  *newDevices     = nil;
+    CFStringRef     uuidString      = NULL;
     
     if (![storedDevices isKindOfClass:[NSArray class]]) {
         DYCOREBLUETOOTHLog(@"Can't find/create an array to store the uuid");
@@ -867,9 +872,9 @@
 
 
 - (void)removeSavedDevice:(CFUUIDRef) uuid {
-    NSArray			*storedDevices	= [[NSUserDefaults standardUserDefaults] arrayForKey:@"DYCoreBluetoothStoredDevices"];
-    NSMutableArray	*newDevices		= nil;
-    CFStringRef		uuidString		= NULL;
+    NSArray         *storedDevices  = [[NSUserDefaults standardUserDefaults] arrayForKey:@"DYCoreBluetoothStoredDevices"];
+    NSMutableArray  *newDevices     = nil;
+    CFStringRef     uuidString      = NULL;
     
     if ([storedDevices isKindOfClass:[NSArray class]]) {
         newDevices = [NSMutableArray arrayWithArray:storedDevices];
