@@ -237,7 +237,7 @@
 		30863B9A178E7F5500A5FD98 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0630;
+				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = danny;
 			};
 			buildConfigurationList = 30863B9D178E7F5500A5FD98 /* Build configuration list for PBXProject "DYCoreBluetoothDemo" */;
@@ -367,6 +367,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -422,6 +423,8 @@
 				GCC_PREFIX_HEADER = "DYCoreBluetoothDemo/DYCoreBluetoothDemo-Prefix.pch";
 				INFOPLIST_FILE = "DYCoreBluetoothDemo/DYCoreBluetoothDemo-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "tw.35g.cms.demo.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -437,6 +440,8 @@
 				GCC_PREFIX_HEADER = "DYCoreBluetoothDemo/DYCoreBluetoothDemo-Prefix.pch";
 				INFOPLIST_FILE = "DYCoreBluetoothDemo/DYCoreBluetoothDemo-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "tw.35g.cms.demo.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -473,6 +478,8 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = "DYCoreBluetoothOSXDemo/DYCoreBluetoothOSXDemo-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "tw.35g.cms.demo.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				WRAPPER_EXTENSION = app;
@@ -506,6 +513,8 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = "DYCoreBluetoothOSXDemo/DYCoreBluetoothOSXDemo-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = "tw.35g.cms.demo.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				WRAPPER_EXTENSION = app;

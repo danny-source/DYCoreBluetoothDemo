@@ -466,6 +466,15 @@
     DYCOREBLUETOOTHLog(@"peripheralDidUpdateRSSI:%@ \n%@\n",peripheral.identifier.UUIDString ,peripheral.RSSI);
 }
 
+//>iOS8
+- (void)peripheral:(CBPeripheral *)peripheral didReadRSSI:(NSNumber *)RSSI error:(nullable NSError *)error {
+    if ([[self delegate] respondsToSelector:@selector(peripheralDidUpdateRSSI:error:)])
+    {
+        [delegate peripheralDidUpdateRSSI:peripheral error:error];
+    }
+    DYCOREBLUETOOTHLog(@"peripheralDidUpdateRSSI(>iOS8):%@ \n%@\n",peripheral.identifier.UUIDString ,peripheral.RSSI);
+}
+
 #pragma mark - peripheral Delegate
 /*
  *  @method didDiscoverServices
