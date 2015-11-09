@@ -458,21 +458,23 @@
     }
 }
 
-- (void)peripheralDidUpdateRSSI:(CBPeripheral *)peripheral error:(NSError *)error {
-    if ([[self delegate] respondsToSelector:@selector(peripheralDidUpdateRSSI:error:)])
-    {
-        [delegate peripheralDidUpdateRSSI:peripheral error:error];
-    }
-    DYCOREBLUETOOTHLog(@"peripheralDidUpdateRSSI:%@ \n%@\n",peripheral.identifier.UUIDString ,peripheral.RSSI);
-}
 
-//>iOS8
-- (void)peripheral:(CBPeripheral *)peripheral didReadRSSI:(NSNumber *)RSSI error:(nullable NSError *)error {
-    if ([[self delegate] respondsToSelector:@selector(peripheralDidUpdateRSSI:error:)])
+#if TARGET_OS_MAC || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
+- (void)peripheralDidUpdateRSSI:(CBPeripheral *)peripheral error:(NSError *)error {
+    if ([[self delegate] respondsToSelector:@selector(didUpdateRSSI:peripheral:error:)])
     {
-        [delegate peripheralDidUpdateRSSI:peripheral error:error];
+        [delegate didUpdateRSSI:peripheral.RSSI peripheral:peripheral error:error];
     }
-    DYCOREBLUETOOTHLog(@"peripheralDidUpdateRSSI(>iOS8):%@ \n%@\n",peripheral.identifier.UUIDString ,peripheral.RSSI);
+    DYCOREBLUETOOTHLog(@"didUpdateRSSI:%@ \n%@\n",peripheral.identifier.UUIDString ,peripheral.RSSI);
+}
+#endif
+
+- (void)peripheral:(CBPeripheral *)peripheral didReadRSSI:(NSNumber *)RSSI error:(nullable NSError *)error {
+    if ([[self delegate] respondsToSelector:@selector(didUpdateRSSI:peripheral:error:)])
+    {
+        [delegate didUpdateRSSI:RSSI peripheral:peripheral error:error];
+    }
+    DYCOREBLUETOOTHLog(@"didUpdateRSSI(>iOS8):%@ \n%@\n",peripheral.identifier.UUIDString ,RSSI);
 }
 
 #pragma mark - peripheral Delegate

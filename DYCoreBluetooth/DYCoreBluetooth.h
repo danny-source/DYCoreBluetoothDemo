@@ -90,13 +90,13 @@
 - (void)didUpdateValue:(CBUUID*)cbUUID stringData:(NSString*)stringData binaryData:(NSData*)binaryData error:(NSError *)error;
 - (void)didRetrievePeripheral:(CBPeripheral *)peripheral;
 - (void)didRetrieveConnected:(CBPeripheral*)peripheral;
+- (void)didUpdateRSSI:(NSNumber *)RSSI peripheral:(CBPeripheral *)peripheral error:(NSError *)error;
 
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error;
 - (void)didDiscoverPeripheral:(NSMutableArray*)foundPeripherals advertisementData:(NSMutableArray*) foundAdvertisementData;
 //
 - (void)peripheralDidUpdateName:(CBPeripheral *)peripheral;
 - (void)peripheralDidInvalidateServices:(CBPeripheral *)peripheral;
-- (void)peripheralDidUpdateRSSI:(CBPeripheral *)peripheral error:(NSError *)error;
 - (void)peripheral:(CBPeripheral *)peripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error;
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error;
 
