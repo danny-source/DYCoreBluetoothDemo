@@ -304,17 +304,20 @@
 - (void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI {
     
     NSMutableString* discoverPeripheralStatus=[NSMutableString stringWithString:@"--------didDiscoverPeripheral\n--------"];
+    //
+    NSMutableDictionary *mAdvertisementData = [NSMutableDictionary dictionaryWithDictionary:advertisementData];
+    [mAdvertisementData setValue:RSSI forKey:CBAdvDataRSSI];
     [discoverPeripheralStatus appendString:@"Peripheral Info:\n"];
     [discoverPeripheralStatus appendFormat:@"NAME: %@\n",peripheral.name];
     [discoverPeripheralStatus appendFormat:@"UUID:%@\n",peripheral.identifier.UUIDString];
     [discoverPeripheralStatus appendFormat:@"RSSI: %@\n",RSSI];
-    [discoverPeripheralStatus appendFormat:@"LocalNameKey:%@\n",[advertisementData objectForKey:CBAdvertisementDataLocalNameKey]];
+    [discoverPeripheralStatus appendFormat:@"LocalNameKey:%@\n",[mAdvertisementData objectForKey:CBAdvertisementDataLocalNameKey]];
 #if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9  || __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_7_0
     (peripheral.state==CBPeripheralStateConnected?[discoverPeripheralStatus appendString:@"isConnected: connected"]:[discoverPeripheralStatus appendString:@"isConnected: disconnected"]);
 #else
     (peripheral.isConnected==TRUE?[discoverPeripheralStatus appendString:@"isConnected: connected"]:[discoverPeripheralStatus appendString:@"isConnected: disconnected"]);
 #endif
-    [discoverPeripheralStatus appendFormat:@"adverisement:%@",advertisementData];
+    [discoverPeripheralStatus appendFormat:@"adverisement:%@",mAdvertisementData];
     
     //add peripheral and replace duplicate
     if (peripheral.identifier==NULL)
@@ -324,7 +327,7 @@
     }
     if ((!_foundPeripherals)) {
         _foundPeripherals = [[NSMutableArray alloc] initWithObjects:peripheral,nil];
-        _foundAdvertisementData = [[NSMutableArray alloc] initWithObjects:advertisementData,nil];
+        _foundAdvertisementData = [[NSMutableArray alloc] initWithObjects:mAdvertisementData,nil];
         [discoverPeripheralStatus appendFormat:@"1.Adding new UUID=%@\n",peripheral.identifier.UUIDString];
     }
     else {
@@ -337,19 +340,19 @@
             
             if ([self UUIDSAreEqual:p.identifier u2:peripheral.identifier]) {
                 [_foundPeripherals replaceObjectAtIndex:i withObject:peripheral];
-                [_foundAdvertisementData replaceObjectAtIndex:i withObject:advertisementData];
+                [_foundAdvertisementData replaceObjectAtIndex:i withObject:mAdvertisementData];
                 [discoverPeripheralStatus appendString:@"Duplicate UUID found updating\n"];
                 return;
             }
         }
         //無重覆新增至陣列
         [_foundPeripherals addObject:peripheral];
-        [_foundAdvertisementData addObject:advertisementData];
+        [_foundAdvertisementData addObject:mAdvertisementData];
         [discoverPeripheralStatus appendFormat:@"2.Adding new UUID=%@\n",peripheral.identifier.UUIDString];
         //
         if ([[self delegate] respondsToSelector:@selector(didDiscoverPeripheralNow:advertisementData:)])
         {
-            [[self delegate] didDiscoverPeripheralNow:[peripheral copy] advertisementData:[advertisementData copy]];
+            [[self delegate] didDiscoverPeripheralNow:[peripheral copy] advertisementData:[mAdvertisementData copy]];
         }
     }
     

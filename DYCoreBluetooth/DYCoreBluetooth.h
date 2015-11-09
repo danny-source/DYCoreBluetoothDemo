@@ -17,7 +17,7 @@
 // OS X code here
 #import <IOBluetooth/IOBluetooth.h>
 #endif
-
+#define CBAdvDataRSSI @"kCBAdvDataRSSI"
 
 @interface DYCoreBluetooth : NSObject<CBCentralManagerDelegate, CBPeripheralDelegate> {
     
