@@ -237,8 +237,13 @@
 		30863B9A178E7F5500A5FD98 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0710;
+				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = danny;
+				TargetAttributes = {
+					30863BA1178E7F5500A5FD98 = {
+						DevelopmentTeam = 9R8Y7U8BE6;
+					};
+				};
 			};
 			buildConfigurationList = 30863B9D178E7F5500A5FD98 /* Build configuration list for PBXProject "DYCoreBluetoothDemo" */;
 			compatibilityVersion = "Xcode 3.2";

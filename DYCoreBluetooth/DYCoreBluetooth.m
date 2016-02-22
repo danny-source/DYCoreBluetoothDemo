@@ -56,6 +56,8 @@
     NSTimer *_reConnectTimer;
     int _writeUartServiceUUID;
     int _writeUartCharacteristicUUID;
+    CBUUID *_writeUartServiceUUID128;
+    CBUUID *_writeUartCharacteristicUUID128;
     id delegate;
     CBCentralManager *_requireBLEPermission;
     BOOL    _isReConnectTimeout;
@@ -90,6 +92,8 @@
         _foundAdvertisementData = [[NSMutableArray alloc] init];
         _writeUartServiceUUID=JB_UART_TX_PRIMARY_SERVICE_UUID;
         _writeUartCharacteristicUUID=JB_UART_TX_SECOND_UUID;
+        _writeUartServiceUUID128 = nil;
+        _writeUartCharacteristicUUID128 = nil;
         isNeedScanningTimeout = NO;
     }
     return self;
@@ -784,6 +788,16 @@
 {
     _writeUartServiceUUID=serviceUUID;
     _writeUartCharacteristicUUID=characteristicUUID;
+    _writeUartServiceUUID128 = nil;
+    _writeUartCharacteristicUUID128 = nil;
+    
+}
+
+- (void)setWriteUARTEnvironmentServiceUUID128:(CBUUID *)serviceUUID128 characteristicUUID:(CBUUID *)characteristicUUID128
+{
+    _writeUartServiceUUID128 = serviceUUID128;
+    _writeUartCharacteristicUUID128 = characteristicUUID128;
+    //
 }
 
 - (void)writeUART:(NSString *)stringData {
@@ -791,20 +805,27 @@
     NSData* data = [stringData dataUsingEncoding:NSUTF8StringEncoding];
     data = [data subdataWithRange:NSMakeRange(0, [data length])];
     [self writeUARTWithBin:data peripheral:connectedPeripheral];
-    DYCOREBLUETOOTHLog(@"%04x %04x writeUART= (%@)\n",_writeUartServiceUUID,_writeUartCharacteristicUUID,stringData);
+    DYCOREBLUETOOTHLog(@"writeUART= (%@)\n",stringData);
     
 }
 
 - (void)writeUARTWithDoubleHexString:(NSString *)stringData {
     [self writeUARTWithBin:[self dobuleHexStringToHexData:stringData] peripheral:connectedPeripheral];
-    DYCOREBLUETOOTHLog(@"%04x %04x writeUARTWithDoubleHexString= (%@)\n",_writeUartServiceUUID,_writeUartCharacteristicUUID,stringData);
+    DYCOREBLUETOOTHLog(@"writeUARTWithDoubleHexString= (%@)\n",stringData);
     
 }
 
 - (void)writeUARTWithBin:(NSData *)data peripheral:(CBPeripheral *)p {
     
-    [self writeValue:[self intUUIDToCBUUID:_writeUartServiceUUID] characteristicUUID:[self intUUIDToCBUUID:_writeUartCharacteristicUUID] peripheral:p data: data];
-    
+    if ((_writeUartCharacteristicUUID128 == nil) && (_writeUartServiceUUID128 ==nil)) {
+        [self writeValue:[self intUUIDToCBUUID:_writeUartServiceUUID] characteristicUUID:[self intUUIDToCBUUID:_writeUartCharacteristicUUID] peripheral:p data: data];
+        DYCOREBLUETOOTHLog(@"writeUART SUUID= (%04x) CUUID=(%04x)\n",_writeUartServiceUUID,_writeUartCharacteristicUUID);
+    }else {
+        [self writeValue:_writeUartServiceUUID128 characteristicUUID:_writeUartCharacteristicUUID128 peripheral:p data: data];
+        DYCOREBLUETOOTHLog(@"writeUART SUUID= (%@)   CUUID=(%@)\n",[_writeUartServiceUUID128 UUIDString],[_writeUartCharacteristicUUID128 UUIDString]);
+        
+    }
+
 }
 
 #pragma mark heart rate data convert
