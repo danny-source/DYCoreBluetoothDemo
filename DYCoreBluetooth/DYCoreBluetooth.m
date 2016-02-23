@@ -735,7 +735,12 @@
         DYCOREBLUETOOTHLog(@"writeValue-characteristic %@",characteristic.UUID);
     }
     //Marked
-    [p writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithResponse];//type:CBCharacteristicWriteWithoutResponse];
+    //Marked
+    if (characteristic.properties == CBCharacteristicPropertyWriteWithoutResponse) {
+        [p writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithoutResponse];
+    }else {
+        [p writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithResponse];
+    }
     
 }
 
@@ -754,7 +759,12 @@
                            p.identifier.UUIDString);
         return;
     }
-    [p writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithResponse];//type:CBCharacteristicWriteWithoutResponse];
+    //Marked
+    if (characteristic.properties == CBCharacteristicPropertyWriteWithoutResponse) {
+        [p writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithoutResponse];
+    }else {
+        [p writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithResponse];
+    }
 }
 
 #pragma mark registerNotification
