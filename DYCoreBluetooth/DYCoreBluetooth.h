@@ -44,6 +44,7 @@
 - (void)writeValueWithString:(CBUUID *) serviceUUID characteristicUUID:(CBUUID *) characteristicUUID peripheral:(CBPeripheral *)p data:(NSString *)strData;
 //
 - (void)setWriteUARTEnvironmentServiceUUID:(int)serviceUUID characteristicUUID:(int)characteristicUUID;
+- (void)setWriteUARTEnvironmentServiceUUID128:(CBUUID *)serviceUUID128 characteristicUUID:(CBUUID *)characteristicUUID128;
 - (void)writeUART:(NSString *)stringData;
 - (void)writeUARTWithDoubleHexString:(NSString *)stringData;
 - (void)writeUARTWithBin:(NSData *)data peripheral:(CBPeripheral *)p;
