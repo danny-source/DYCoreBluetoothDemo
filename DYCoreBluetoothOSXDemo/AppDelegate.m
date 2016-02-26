@@ -88,7 +88,8 @@
 
 -(void) didConnected:(CBPeripheral *)peripheral error:(NSError *)error{
     NSLog(@"didConnected");
-    [dcb1 setWriteUARTEnvironmentServiceUUID:0xffe0 characteristicUUID:0xffe2];
+//    [dcb1 setWriteUARTEnvironmentServiceUUID:0xffe0 characteristicUUID:0xffe2];
+    [dcb1 setWriteUARTEnvironmentServiceUUID128:[CBUUID UUIDWithString:@"FFE0"] characteristicUUID:[CBUUID UUIDWithString:@"FFE2"]];
     _btnConnect.hidden = YES;
     _btnDisconnect.enabled = YES;
     _btnDisconnect.hidden = NO;

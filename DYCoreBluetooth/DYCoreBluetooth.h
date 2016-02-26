@@ -41,16 +41,17 @@
 - (BOOL)isConnectedCurrentPeripheral;
 
 - (void)writeValue:(CBUUID *) serviceUUID characteristicUUID:(CBUUID *) characteristicUUID peripheral:(CBPeripheral *)p data:(NSData *)data;
+
 - (void)writeValueWithString:(CBUUID *) serviceUUID characteristicUUID:(CBUUID *) characteristicUUID peripheral:(CBPeripheral *)p data:(NSString *)strData;
 //
-- (void)setWriteUARTEnvironmentServiceUUID:(int)serviceUUID characteristicUUID:(int)characteristicUUID;
+- (void)setWriteUARTEnvironmentServiceUUID:(int)serviceUUID characteristicUUID:(int)characteristicUUID __attribute__((deprecated("TRY setWriteUARTEnvironmentServiceUUID128:characteristicUUID")));
 - (void)setWriteUARTEnvironmentServiceUUID128:(CBUUID *)serviceUUID128 characteristicUUID:(CBUUID *)characteristicUUID128;
 - (void)writeUART:(NSString *)stringData;
 - (void)writeUARTWithDoubleHexString:(NSString *)stringData;
 - (void)writeUARTWithBin:(NSData *)data peripheral:(CBPeripheral *)p;
 //
 - (void)registerNotification:(CBUUID *) serviceUUID characteristicUUID:(CBUUID *)characteristicUUID peripheral:(CBPeripheral *)p on:(BOOL)on;
-- (void)registerNotificationWithIntUUID:(UInt16) serviceUUID characteristicUUID:(UInt16)characteristicUUID peripheral:(CBPeripheral *)p on:(BOOL)on;
+- (void)registerNotificationWithIntUUID:(UInt16) serviceUUID characteristicUUID:(UInt16)characteristicUUID peripheral:(CBPeripheral *)p on:(BOOL)on __attribute__((deprecated("TRY registerNotification:characteristicUUID:peripheral:on")));
 
 @property (strong, nonatomic) id                                delegate;
 @property (strong, nonatomic) CBPeripheral                      *connectedPeripheral;

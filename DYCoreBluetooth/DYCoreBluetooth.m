@@ -33,7 +33,7 @@
 #define JB_UART_TX_SECOND_UUID                               0xFFF5
 #define JB_UART_TX_WRITE_LEN                                     20  // bytes
 //
-#define DYBLELOG 1
+//#define DYBLELOG 1
 #define BLE_RX_BUFFER_LEN JB_UART_RX_NOTIFICATION_READ_LEN
 #ifdef DYBLELOG
 #define DYCOREBLUETOOTHLog(...) NSLog(@"%s %@", __PRETTY_FUNCTION__, [NSString stringWithFormat:__VA_ARGS__])
@@ -734,7 +734,6 @@
     }else{
         DYCOREBLUETOOTHLog(@"writeValue-characteristic %@",characteristic.UUID);
     }
-    //Marked
     //Marked
     if (characteristic.properties == CBCharacteristicPropertyWriteWithoutResponse) {
         [p writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithoutResponse];

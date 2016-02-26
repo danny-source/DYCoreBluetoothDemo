@@ -40,19 +40,11 @@
 
 - (IBAction)btnBLE_reConnect:(id)sender {
     connectPeripheralArray=[NSMutableArray array];
-//    [dyble reConnect:@"07304E69-D29B-0409-E51C-455A5F3E6029"];
     [dyble connectWithUUIDString:@"419D6B15-1F6C-EE7B-7751-2748ACA0D7C3"];
-//    [dyble reConnect:@"A5CC5A7F-CCD9-F150-8B49-9D49DB356012"];
-    //
-    //[dyble reConnectWithStringUUIDArray:[NSArray arrayWithObjects:@"07304E69-D29B-0409-E51C-455A5F3E6029",@"A5CC5A7F-CCD9-F150-8B49-9D49DB356012", nil]];
 }
 - (IBAction)btnBLE_reConnect2:(id)sender {
-    //[dyble reConnect:@"A5CC5A7F-CCD9-F150-8B49-9D49DB356012"];
-    //[dyble reConnectWithStringUUIDArray:[NSArray arrayWithObjects:@"07304E69-D29B-0409-E51C-455A5F3E6029",@"A5CC5A7F-CCD9-F150-8B49-9D49DB356012", nil]];
     NSLog(@"%@",[dyble connectedPeripheral].name);
     [dyble writeUART:@"1234567890"];
-    //Byte inventoryCommand[6]={ 0x01, 0x04, 0x03, 0x26, 0x01, 0x00 };
-    //[dyble writeToUARTWithBin:[[NSData alloc] initWithBytes:inventoryCommand length:6] peripheral:[dyble connectedPeripheral]];
     
 }
 - (IBAction)btnBLE_Disconnect:(id)sender {
@@ -98,7 +90,8 @@
     [connectPeripheralArray addObject:peripheral];
     NSLog(@"%@ didConnected",peripheral.identifier.UUIDString);
     NSLog(@"didConnected");
-    [dyble registerNotificationWithIntUUID:0xffe0 characteristicUUID:0xffe2 peripheral:connectPeripheral on:YES];
+//    [dyble registerNotificationWithIntUUID:0xffe0 characteristicUUID:0xffe2 peripheral:connectPeripheral on:YES];
+    [dyble registerNotification:[CBUUID UUIDWithString:@"FFE0"] characteristicUUID:[CBUUID UUIDWithString:@"FFE2"] peripheral:connectPeripheral on:YES];
     
 }
 -(void) didDisconnected:(CBPeripheral *)peripheral error:(NSError *)error
