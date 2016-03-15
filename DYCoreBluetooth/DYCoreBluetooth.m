@@ -735,10 +735,13 @@
         DYCOREBLUETOOTHLog(@"writeValue-characteristic %@",characteristic.UUID);
     }
     //Marked
-    if (characteristic.properties == CBCharacteristicPropertyWriteWithoutResponse) {
-        [p writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithoutResponse];
-    }else {
+    if ((characteristic.properties & CBCharacteristicPropertyWriteWithoutResponse) == 0) {
         [p writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithResponse];
+        NSLog(@"CBCharacteristicWriteWithResponse");
+    }
+    else {
+        [p writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithoutResponse];
+        NSLog(@"CBCharacteristicWriteWithoutResponse");
     }
     
 }
