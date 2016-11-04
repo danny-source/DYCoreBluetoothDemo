@@ -15,7 +15,9 @@
 #import <UIKit/UIKit.h>
 #else
 // OS X code here
-#import <IOBluetooth/IOBluetooth.h>
+//#import <IOBluetooth/IOBluetooth.h>
+#import <CoreBluetooth/CoreBluetooth.h>
+#import <CoreBluetooth/CBService.h>
 #endif
 #define CBAdvDataRSSI @"kCBAdvDataRSSI"
 
@@ -37,7 +39,12 @@
 - (void)disconnectCurrentPeripheral;
 - (void)reConnect:(NSString*) strUUID;
 
-- (CBCentralManagerState) getState;
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_10_0
+- (CBManagerState)getState;
+#else
+- (CBCentralManagerState)getState;
+#endif
+
 - (BOOL)isConnectedCurrentPeripheral;
 
 - (void)writeValue:(CBUUID *) serviceUUID characteristicUUID:(CBUUID *) characteristicUUID peripheral:(CBPeripheral *)p data:(NSData *)data;

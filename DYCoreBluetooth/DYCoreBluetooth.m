@@ -199,9 +199,17 @@
     [self disconnect:connectedPeripheral];
 }
 
+
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_10_0
+- (CBManagerState)getState {
+    return CM.state;
+}
+#else
 - (CBCentralManagerState)getState {
     return CM.state;
 }
+#endif
 
 - (BOOL)isConnectedCurrentPeripheral {
     if (connectedPeripheral.state == CBPeripheralStateConnected) {
@@ -610,12 +618,15 @@
     //[00000000000]
     //
     //[12300000000]
-    char chardata[BLE_RX_BUFFER_LEN + 1];
-    memset(chardata, 0, sizeof(char)*(BLE_RX_BUFFER_LEN + 1));
+    //char chardata[BLE_RX_BUFFER_LEN + 1];
+    //memset(chardata, 0, sizeof(char)*(BLE_RX_BUFFER_LEN + 1));
     
-    [data getBytes:&chardata length:data.length];
-    DYCOREBLUETOOTHLog(@"len=%lu",(unsigned long)data.length);
-    NSString *marketPacket = [NSString stringWithCString:chardata encoding:NSASCIIStringEncoding];
+    //[data getBytes:&chardata length:data.length];
+    //DYCOREBLUETOOTHLog(@"len=%lu",(unsigned long)data.length);
+    
+    //NSString *marketPacket = [NSString stringWithCString:chardata encoding:NSASCIIStringEncoding];
+    //先前使用方法會造成資料中間有hex:00時成為null而造成轉換資料不正確
+    NSString *marketPacket = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
     return marketPacket;
 }
 
