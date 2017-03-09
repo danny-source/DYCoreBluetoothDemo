@@ -27,9 +27,10 @@
 		30A62B311802751C0051BA5A /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30A62B2F1802751C0051BA5A /* MainMenu.xib */; };
 		30A62B331802751C0051BA5A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 30A62B321802751C0051BA5A /* Images.xcassets */; };
 		30A62B4C180275BF0051BA5A /* DYCoreBluetooth.m in Sources */ = {isa = PBXBuildFile; fileRef = 30A62B1318024ED00051BA5A /* DYCoreBluetooth.m */; };
-		30A62B4E1802786C0051BA5A /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A62B4D1802786C0051BA5A /* IOBluetooth.framework */; };
-		30A62B58180281010051BA5A /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A62B57180281010051BA5A /* AppKit.framework */; };
-		30A62B5A180282B70051BA5A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A62B59180282B70051BA5A /* Cocoa.framework */; };
+		30ADC9FC1E70EB1B0020CAED /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30ADC9FB1E70EB1B0020CAED /* CoreBluetooth.framework */; };
+		30ADC9FE1E70EB270020CAED /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30ADC9FD1E70EB270020CAED /* IOBluetooth.framework */; };
+		30ADCA001E70EB300020CAED /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30ADC9FF1E70EB300020CAED /* AppKit.framework */; };
+		30ADCA021E70EB360020CAED /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30ADCA011E70EB360020CAED /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -62,9 +63,12 @@
 		30A62B2D1802751C0051BA5A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		30A62B301802751C0051BA5A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		30A62B321802751C0051BA5A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		30A62B4D1802786C0051BA5A /* IOBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetooth.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/IOBluetooth.framework; sourceTree = DEVELOPER_DIR; };
-		30A62B57180281010051BA5A /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/AppKit.framework; sourceTree = DEVELOPER_DIR; };
-		30A62B59180282B70051BA5A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		30ADC9FB1E70EB1B0020CAED /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/CoreBluetooth.framework; sourceTree = DEVELOPER_DIR; };
+		30ADC9FD1E70EB270020CAED /* IOBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetooth.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/IOBluetooth.framework; sourceTree = DEVELOPER_DIR; };
+		30ADC9FF1E70EB300020CAED /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/AppKit.framework; sourceTree = DEVELOPER_DIR; };
+		30ADCA011E70EB360020CAED /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		30ADCA031E70F72E0020CAED /* DYAvailability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DYAvailability.h; sourceTree = "<group>"; };
+		30ADCA0A1E7103A10020CAED /* DYSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DYSystem.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,9 +87,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				30A62B5A180282B70051BA5A /* Cocoa.framework in Frameworks */,
-				30A62B58180281010051BA5A /* AppKit.framework in Frameworks */,
-				30A62B4E1802786C0051BA5A /* IOBluetooth.framework in Frameworks */,
+				30ADCA021E70EB360020CAED /* Cocoa.framework in Frameworks */,
+				30ADCA001E70EB300020CAED /* AppKit.framework in Frameworks */,
+				30ADC9FE1E70EB270020CAED /* IOBluetooth.framework in Frameworks */,
+				30ADC9FC1E70EB1B0020CAED /* CoreBluetooth.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,9 +120,10 @@
 		30863BA4178E7F5500A5FD98 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				30A62B59180282B70051BA5A /* Cocoa.framework */,
-				30A62B57180281010051BA5A /* AppKit.framework */,
-				30A62B4D1802786C0051BA5A /* IOBluetooth.framework */,
+				30ADCA011E70EB360020CAED /* Cocoa.framework */,
+				30ADC9FF1E70EB300020CAED /* AppKit.framework */,
+				30ADC9FD1E70EB270020CAED /* IOBluetooth.framework */,
+				30ADC9FB1E70EB1B0020CAED /* CoreBluetooth.framework */,
 				30A22FC117E19A2800369BE1 /* CoreBluetooth.framework */,
 				30863BA5178E7F5500A5FD98 /* UIKit.framework */,
 				30863BA7178E7F5500A5FD98 /* Foundation.framework */,
@@ -157,6 +163,8 @@
 		30A62B1118024ED00051BA5A /* DYCoreBluetooth */ = {
 			isa = PBXGroup;
 			children = (
+				30ADCA0A1E7103A10020CAED /* DYSystem.h */,
+				30ADCA031E70F72E0020CAED /* DYAvailability.h */,
 				30A62B1218024ED00051BA5A /* DYCoreBluetooth.h */,
 				30A62B1318024ED00051BA5A /* DYCoreBluetooth.m */,
 			);
@@ -242,6 +250,10 @@
 				TargetAttributes = {
 					30863BA1178E7F5500A5FD98 = {
 						DevelopmentTeam = 9R8Y7U8BE6;
+					};
+					30A62B181802751C0051BA5A = {
+						DevelopmentTeam = BQKGEG4P4H;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -442,8 +454,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_HEADERS_UNIFDEF_FLAGS = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "DYCoreBluetoothDemo/DYCoreBluetoothDemo-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
 				INFOPLIST_FILE = "DYCoreBluetoothDemo/DYCoreBluetoothDemo-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				ONLY_ACTIVE_ARCH = NO;
@@ -483,7 +500,9 @@
 				CLANG_WARN_OBJC_RECEIVER_WEAK = NO;
 				CLANG_WARN_OBJC_REPEATED_USE_OF_WEAK = NO;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = BQKGEG4P4H;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
@@ -493,8 +512,10 @@
 				GCC_PREFIX_HEADER = "DYCoreBluetoothOSXDemo/DYCoreBluetoothOSXDemo-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
+					"DYCOREBLUETOOTH_DEBUG=1",
 					"$(inherited)",
 				);
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "$(inherited)";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -520,8 +541,10 @@
 				CLANG_WARN_OBJC_RECEIVER_WEAK = NO;
 				CLANG_WARN_OBJC_REPEATED_USE_OF_WEAK = NO;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = BQKGEG4P4H;
 				ENABLE_NS_ASSERTIONS = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

@@ -57,7 +57,7 @@
 }
 
 
-- (void)didUpdateState:(BOOL)isAvailable message:(NSString*)msg status:(CBCentralManagerState)status {
+- (void)didUpdateState:(BOOL)isAvailable message:(NSString*)msg status:(DYCBCentralManagerState)status {
     if (!isAvailable) {
         _btnDisconnect.enabled = NO;
         _btnConnect.enabled = NO;

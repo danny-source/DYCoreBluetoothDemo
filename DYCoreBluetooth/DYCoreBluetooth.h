@@ -6,19 +6,8 @@
 //  Copyright (c) 2012年 danny. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "DYAvailability.h"
 
-#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-// iOS code here
-#import <CoreBluetooth/CoreBluetooth.h>
-#import <CoreBluetooth/CBService.h>
-#import <UIKit/UIKit.h>
-#else
-// OS X code here
-//#import <IOBluetooth/IOBluetooth.h>
-#import <CoreBluetooth/CoreBluetooth.h>
-#import <CoreBluetooth/CBService.h>
-#endif
 #define CBAdvDataRSSI @"kCBAdvDataRSSI"
 
 @interface DYCoreBluetooth : NSObject<CBCentralManagerDelegate, CBPeripheralDelegate> {
@@ -39,11 +28,7 @@
 - (void)disconnectCurrentPeripheral;
 - (void)reConnect:(NSString*) strUUID;
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_10_0
-- (CBManagerState)getState;
-#else
-- (CBCentralManagerState)getState;
-#endif
+- (DYCBCentralManagerState)getState;
 
 - (BOOL)isConnectedCurrentPeripheral;
 
@@ -80,7 +65,7 @@
  * @returns void
  */
 - (void)didUpdateValueWithPeripheral:(CBPeripheral*)peripheral Characteristics:(CBUUID*)cbUUID stringData:(NSString*)stringData binaryData:(NSData*)binaryData error:(NSError *)error;
-- (void)didUpdateState:(BOOL)isAvailable message:(NSString*)msg status:(CBCentralManagerState)status;
+- (void)didUpdateState:(BOOL)isAvailable message:(NSString*)msg status:(DYCBCentralManagerState)status;
 - (void)didDiscoverPeripheral:(NSMutableArray*)foundPeripherals;
 
 

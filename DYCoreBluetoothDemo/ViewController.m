@@ -7,7 +7,6 @@
 //
 
 #import "ViewController.h"
-#import "DYCoreBluetooth.h"
 
 @interface ViewController ()
 {
@@ -58,13 +57,19 @@
 
 #pragma mark - DYCoreBluetooth delegate
 
+- (void)didUpdateState:(BOOL)isAvailable message:(NSString*)msg status:(DYCBCentralManagerState)status
+{
+    NSLog(@"state:%@",msg);
+}
+
+- (void)didUpdateValueWithPeripheral:(CBPeripheral*)peripheral Characteristics:(CBUUID*)cbUUID stringData:(NSString*)stringData binaryData:(NSData*)binaryData error:(NSError *)error
+{
+    
+}
+
 -(void) didUpdateValue:(CBUUID*)cbUUID Data:(NSString*)nsstrdata Data:(NSData*)nsdata error:(NSError *)error
 {
     NSLog(@"-%@ %@",[nsdata debugDescription],nsstrdata);
-}
--(void) didUpdateState:(BOOL)isWork message:(NSString*)msg getStatus:(CBCentralManagerState)status
-{
-    
 }
 //李HMD   07304E69-D29B-0409-E51C-455A5F3E6029
 //久邦    07304E69-D29B-0409-E51C-455A5F3E6029

@@ -7,39 +7,10 @@
 //
 
 #import "DYCoreBluetooth.h"
-
+#import "DYSystem.h"
 //
-#define kSCAN_TIMEOUT 3.0f  // Timeout value for scanning
-#define kRECONNECT_TIMEOUT 5.0f // Timeout value for scanning
-//TI CC2540/CC2541
-#define TI_UART_SERVICE                                      0xFFF0
-#define TI_UART_RX_PRIMARY_SERVICE_UUID                      0xFFE0  // for STRING RX UUID
-#define TI_UART_RX_NOTIFICATION_UUID                         0xFFF4  // for STRING RX NOTIFY
-#define TI_UART_RX_NOTIFICATION_READ_LEN                         20  // bytes
-#define TI_UART_TX_PRIMARY_SERVICE_UUID                      0xFFF0  // for STRING TX UUID
-#define TI_UART_TX_SECOND_UUID                               0xFFF5
-#define TI_UART_TX_WRITE_LEN                                     20  // bytes
-//BLE to Serial
-//微程式
-#define WT_SPP_SERVICE_UUID                                 0xFFF0  // for STRING RX UUID
-#define WT_SPP_NOTIFY_UUID                                  0xFFF4  // for STRING RX NOTIFY
-#define WT_SPP_DATA_UUID                                    0xFFF5
-#define WT_SPP_DATA_LEN                                     20
-//久邦
-#define JB_UART_RX_PRIMARY_SERVICE_UUID                      0xFFE0  // for STRING RX UUID
-#define JB_UART_RX_NOTIFICATION_UUID                         0xFFE2  // for STRING RX NOTIFY
-#define JB_UART_RX_NOTIFICATION_READ_LEN                         20  // bytes
-#define JB_UART_TX_PRIMARY_SERVICE_UUID                      0xFFF0  // for STRING TX UUID
-#define JB_UART_TX_SECOND_UUID                               0xFFF5
-#define JB_UART_TX_WRITE_LEN                                     20  // bytes
-//
-//#define DYBLELOG 1
-#define BLE_RX_BUFFER_LEN JB_UART_RX_NOTIFICATION_READ_LEN
-#ifdef DYBLELOG
-#define DYCOREBLUETOOTHLog(...) NSLog(@"%s %@", __PRETTY_FUNCTION__, [NSString stringWithFormat:__VA_ARGS__])
-#else
-#define DYCOREBLUETOOTHLog(...) do { } while (0)
-#endif
+#define kSCAN_TIMEOUT 3.0f                  // Timeout value for scanning
+#define kRECONNECT_TIMEOUT 5.0f              // Timeout value for scanning
 
 @interface DYCoreBluetooth()
 
@@ -51,7 +22,7 @@
 
 @implementation DYCoreBluetooth
 {
-    CBPeripheral *CBP;
+    CBPeripheral *_connectionTempPeripheral;
     NSTimer *_scanTimer;
     NSTimer *_reConnectTimer;
     int _writeUartServiceUUID;
@@ -90,8 +61,8 @@
         
         _foundPeripherals = [[NSMutableArray alloc] init];
         _foundAdvertisementData = [[NSMutableArray alloc] init];
-        _writeUartServiceUUID=JB_UART_TX_PRIMARY_SERVICE_UUID;
-        _writeUartCharacteristicUUID=JB_UART_TX_SECOND_UUID;
+        _writeUartServiceUUID=SERIAL_UART_TX_SERVICE_UUID;
+        _writeUartCharacteristicUUID=SERIAL_UART_TX_CHARACTERISTIC;
         _writeUartServiceUUID128 = nil;
         _writeUartCharacteristicUUID128 = nil;
         isNeedScanningTimeout = NO;
@@ -136,14 +107,14 @@
 - (void)disconnect:(CBPeripheral*)peripheral {
     [_reConnectTimer invalidate];
     if (peripheral!=NULL){
-        DYCOREBLUETOOTHLog(@"disconnect %@",peripheral.name);
+        DYCBDEBUG(@"disconnect by %@",peripheral.name);
         [CM cancelPeripheralConnection:peripheral];
     }
 }
 - (void)disconnectCurrentPeripheral {
     if (connectedPeripheral!=NULL)
     {
-        DYCOREBLUETOOTHLog(@"disconnect %@",connectedPeripheral.name);
+        DYCBDEBUG(@"disconnect by %@",connectedPeripheral.name);
         [CM cancelPeripheralConnection:connectedPeripheral];
     }
 }
@@ -156,10 +127,10 @@
     NSArray *peripheralArray = [CM retrievePeripheralsWithIdentifiers:[NSArray arrayWithObject:uuid]];
     
     if (peripheralArray.count>0) {
-        DYCOREBLUETOOTHLog(@"%@",[peripheralArray objectAtIndex:0]);
+        DYCBDEBUG(@"reConnect by %@",[peripheralArray objectAtIndex:0]);
         [self connect:[peripheralArray objectAtIndex:0]];
     }else {
-        DYCOREBLUETOOTHLog(@"fail");
+        DYCBDEBUG(@"reConnect fail by");
     }
     
 #else
@@ -168,6 +139,7 @@
 #endif
     [_reConnectTimer invalidate];
     _reConnectTimer = [NSTimer scheduledTimerWithTimeInterval:kRECONNECT_TIMEOUT target:self selector:@selector(reConnectTimeout:) userInfo:nil repeats:NO];
+    DYCBDEBUG(@"reConnect timer started ,Interval by %zd",kRECONNECT_TIMEOUT);
 }
 
 - (void)reConnectWithStringUUIDArray:(NSArray*) uuidStringArray {
@@ -188,28 +160,21 @@
 #endif
     }
     
-    DYCOREBLUETOOTHLog(@"reConnectWithStringUUIDArray %lu",(unsigned long)uuidStringArray.count);
+    DYCBDEBUG(@"reConnectWithStringUUIDArray %lu",(unsigned long)uuidStringArray.count);
     _reConnectTimer = [NSTimer scheduledTimerWithTimeInterval:kRECONNECT_TIMEOUT target:self selector:@selector(reConnectTimeout:) userInfo:nil repeats:NO];
 }
 
 - (void)reConnectTimeout:(NSTimer*)timer {
-    DYCOREBLUETOOTHLog(@"reConnectTimeout");
+    DYCBDEBUG(@"reConnectTimeout");
     _isReConnectTimeout = YES;
     _reConnectTimer=timer;
     [self disconnect:connectedPeripheral];
 }
 
 
-
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_10_0
-- (CBManagerState)getState {
-    return CM.state;
+- (DYCBCentralManagerState)getState {
+    return (DYCBCentralManagerState)CM.state;
 }
-#else
-- (CBCentralManagerState)getState {
-    return CM.state;
-}
-#endif
 
 - (BOOL)isConnectedCurrentPeripheral {
     if (connectedPeripheral.state == CBPeripheralStateConnected) {
@@ -233,9 +198,10 @@
         NSArray *uuidArray  = @[[CBUUID UUIDWithString:uuidString]];
         [CM scanForPeripheralsWithServices:uuidArray options:options];
     }
-    
+    DYCBDEBUG(@"scanning is started");
     if (!isNeedScanningTimeout) {
-    _scanTimer=[NSTimer scheduledTimerWithTimeInterval:kSCAN_TIMEOUT target:self selector:@selector(scanTimeout:) userInfo:nil repeats:NO];
+        _scanTimer=[NSTimer scheduledTimerWithTimeInterval:kSCAN_TIMEOUT target:self selector:@selector(scanTimeout:) userInfo:nil repeats:NO];
+        DYCBDEBUG(@"scanning timmer started,Interval by  %zd",kSCAN_TIMEOUT);
     }else {
         [_scanTimer invalidate];
     }
@@ -248,15 +214,15 @@
     if (CM!=NULL){
         [CM stopScan];
     }else{
-        DYCOREBLUETOOTHLog(@"CM is Null!");
+//        DYCBDEBUG(@"CM is Null!");
     }
     [_scanTimer invalidate];
-    DYCOREBLUETOOTHLog(@"stopScanning");
+    DYCBDEBUG(@"scanning is stop");
 }
 
 
 - (void)scanTimeout:(NSTimer*)timer {
-    DYCOREBLUETOOTHLog(@"scanTimeout");
+    DYCBDEBUG(@"scanning is timeout");
     _scanTimer=timer;
     [self stopScanning];
     if ([[self delegate] respondsToSelector:@selector(didDiscoverPeripheral:)])
@@ -276,7 +242,7 @@
  */
 
 - (void)centralManagerDidUpdateState:(CBCentralManager*)cManager {
-    NSMutableString* statusMessage=[NSMutableString stringWithString:@"UpdateState:"];
+    NSMutableString* statusMessage= [NSMutableString string];
     BOOL isAvailable=FALSE;
     switch (cManager.state) {
         case CBCentralManagerStateUnknown:
@@ -305,17 +271,17 @@
             [statusMessage appendString:@"Unknown"];
             break;
     }
-    DYCOREBLUETOOTHLog(@"%@",statusMessage);
+    DYCBDEBUG(@"state string:%@",statusMessage);
     if ([[self delegate] respondsToSelector:@selector(didUpdateState:message:status:)])
     {
-        [[self delegate] didUpdateState:isAvailable message:statusMessage status:cManager.state];
+        [[self delegate] didUpdateState:isAvailable message:statusMessage status:(DYCBCentralManagerState)cManager.state];
     }
 }
 
 
 - (void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI {
     
-    NSMutableString* discoverPeripheralStatus=[NSMutableString stringWithString:@"--------didDiscoverPeripheral\n--------"];
+    NSMutableString* discoverPeripheralStatus=[NSMutableString stringWithString:@"=====DiscoverPeripheral start=====\n"];
     //
     NSMutableDictionary *mAdvertisementData = [NSMutableDictionary dictionaryWithDictionary:advertisementData];
     [mAdvertisementData setValue:RSSI forKey:CBAdvDataRSSI];
@@ -334,13 +300,14 @@
     //add peripheral and replace duplicate
     if (peripheral.identifier==NULL)
     {
-        DYCOREBLUETOOTHLog(@"%@",discoverPeripheralStatus);
+        DYCBDEBUG(@"%@",@"pheripheral identifier is NULL\n");
+        DYCBDEBUG(@"%@",discoverPeripheralStatus);
         return;
     }
     if ((!_foundPeripherals)) {
         _foundPeripherals = [[NSMutableArray alloc] initWithObjects:peripheral,nil];
         _foundAdvertisementData = [[NSMutableArray alloc] initWithObjects:mAdvertisementData,nil];
-        [discoverPeripheralStatus appendFormat:@"1.Adding new UUID=%@\n",peripheral.identifier.UUIDString];
+        [discoverPeripheralStatus appendFormat:@"first add UUID=%@\n",peripheral.identifier.UUIDString];
     }
     else {
         //檢查是否有重覆
@@ -353,14 +320,14 @@
             if ([self UUIDSAreEqual:p.identifier u2:peripheral.identifier]) {
                 [_foundPeripherals replaceObjectAtIndex:i withObject:peripheral];
                 [_foundAdvertisementData replaceObjectAtIndex:i withObject:mAdvertisementData];
-                [discoverPeripheralStatus appendString:@"Duplicate UUID found updating\n"];
+                [discoverPeripheralStatus appendString:@"duplicate UUID found and updating\n"];
                 return;
             }
         }
         //無重覆新增至陣列
         [_foundPeripherals addObject:peripheral];
         [_foundAdvertisementData addObject:mAdvertisementData];
-        [discoverPeripheralStatus appendFormat:@"2.Adding new UUID=%@\n",peripheral.identifier.UUIDString];
+        [discoverPeripheralStatus appendFormat:@"add UUID=%@\n",peripheral.identifier.UUIDString];
         //
         if ([[self delegate] respondsToSelector:@selector(didDiscoverPeripheralNow:advertisementData:)])
         {
@@ -368,15 +335,16 @@
         }
     }
     
-    [discoverPeripheralStatus appendString:@"--------didDiscoverPeripheral\n--------"];
-    DYCOREBLUETOOTHLog(@"%@",discoverPeripheralStatus);
+    [discoverPeripheralStatus appendString:@"====DiscoverPeripheral end====\n"];
+    DYCBDEBUG(@"%@",discoverPeripheralStatus);
     
 }
 
 
 - (void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral {
-    DYCOREBLUETOOTHLog(@"Connect To Peripheral with name: %@\nwith UUID:%@\n",peripheral.name, peripheral.identifier.UUIDString);
-    DYCOREBLUETOOTHLog(@"---------------------------------------------------");
+    DYCBDEBUG(@"====connected====");
+    DYCBDEBUG(@"peripheral : %@\nUUID:%@\n",peripheral.name, peripheral.identifier.UUIDString);
+    
     [_reConnectTimer invalidate];
     peripheral.delegate=self;
     connectedPeripheral=peripheral;
@@ -390,11 +358,11 @@
     //關閉idleTimer
     [UIApplication sharedApplication].idleTimerDisabled=YES;
 #endif
-    
+    DYCBDEBUG(@"================");
 }
 
 - (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error {
-    DYCOREBLUETOOTHLog(@"didFailToConnectPeripheral\n");
+    DYCBDEBUG(@"fail to connect\n");
     
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
     //開啟idleTimer
@@ -408,7 +376,7 @@
 }
 
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error {
-    DYCOREBLUETOOTHLog(@"%@ didDisconnectPeripheral\n",peripheral.name);
+    DYCBDEBUG(@"disconnect:%@\n",peripheral.name);
     //if (!(peripheral.state == CBPeripheralStateConnected)) {
     if (_isReConnectTimeout) {
         //連線中或是已斷線的話都將通知傳至FailToConnect，讓重新連線Timeout能夠轉到這
@@ -423,14 +391,14 @@
 }
 
 - (void)centralManager:(CBCentralManager *)central didRetrieveConnectedPeripherals:(NSArray *)peripherals {
-    DYCOREBLUETOOTHLog(@"didRetrieveConnectedPeripherals");
     
     if (peripherals.count>0){
-        CBP=[peripherals objectAtIndex:0];
-        [CM connectPeripheral:CBP options:nil];
-        DYCOREBLUETOOTHLog(@"Reconnect Device Name\n%@",CBP.name);
-        DYCOREBLUETOOTHLog(@"UUID %@",CBP.identifier.UUIDString);
-        connectedPeripheral=CBP;
+        _connectionTempPeripheral=[peripherals objectAtIndex:0];
+        [CM connectPeripheral:_connectionTempPeripheral options:nil];
+        DYCBDEBUG(@"====reconnect====");
+        DYCBDEBUG(@"name:%@\n",_connectionTempPeripheral.name);
+        DYCBDEBUG(@"UUID:%@\n",_connectionTempPeripheral.identifier.UUIDString);
+        connectedPeripheral=_connectionTempPeripheral;
     }
     if ([[self delegate] respondsToSelector:@selector(didRetrieveConnected:)])
     {
@@ -438,13 +406,12 @@
     }
 }
 - (void)centralManager:(CBCentralManager *)central didRetrievePeripherals:(NSArray *)peripherals {
-    DYCOREBLUETOOTHLog(@"didRetrievePeripherals");
     
     if (peripherals.count>0){
         connectedPeripheral=[peripherals objectAtIndex:0];
         [CM connectPeripheral:connectedPeripheral options:nil];
-        DYCOREBLUETOOTHLog(@"Reconnect Device Name\n%@",connectedPeripheral.name);
-        DYCOREBLUETOOTHLog(@"UUID %@",connectedPeripheral.identifier.UUIDString);
+        DYCBDEBUG(@"Reconnect Device Name\n%@",connectedPeripheral.name);
+        DYCBDEBUG(@"UUID %@",connectedPeripheral.identifier.UUIDString);
         
         if ([[self delegate] respondsToSelector:@selector(didRetrievePeripheral:)])
         {
@@ -463,7 +430,7 @@
     {
         [delegate peripheralDidUpdateName:peripheral];
     }
-    DYCOREBLUETOOTHLog(@"peripheralDidUpdateName:%@ \n%@\n",peripheral.identifier.UUIDString ,peripheral.name);
+    DYCBDEBUG(@"update peripheral name:%@ \n%@\n",peripheral.identifier.UUIDString ,peripheral.name);
 }
 
 - (void)peripheralDidInvalidateServices:(CBPeripheral *)peripheral {
@@ -474,13 +441,13 @@
 }
 
 
-#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_8_0) || TARGET_OS_MAC
+#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_8_0) || TARGET_OS_OSX
 - (void)peripheral:(CBPeripheral *)peripheral didReadRSSI:(NSNumber *)RSSI error:(nullable NSError *)error {
     if ([[self delegate] respondsToSelector:@selector(didUpdateRSSI:peripheral:error:)])
     {
         [delegate didUpdateRSSI:RSSI peripheral:peripheral error:error];
     }
-    DYCOREBLUETOOTHLog(@"didUpdateRSSI(>iOS8):%@ \n%@\n",peripheral.identifier.UUIDString ,RSSI);
+    DYCBDEBUG(@"didUpdateRSSI(>iOS8):%@ \n%@\n",peripheral.identifier.UUIDString ,RSSI);
 }
 
 #else
@@ -489,7 +456,7 @@
     {
         [delegate didUpdateRSSI:peripheral.RSSI peripheral:peripheral error:error];
     }
-    DYCOREBLUETOOTHLog(@"didUpdateRSSI:%@ \n%@\n",peripheral.identifier.UUIDString ,peripheral.RSSI);
+    DYCBDEBUG(@"didUpdateRSSI:%@ \n%@\n",peripheral.identifier.UUIDString ,peripheral.RSSI);
 }
 #endif
 
@@ -506,26 +473,25 @@
  */
 
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error {
-    DYCOREBLUETOOTHLog(@"didDiscoverServices:\n");
     
     if( peripheral.identifier == NULL  ) return;
     
     if (!error) {
-        //DYCOREBLUETOOTHLog(@"Services of peripheral with UUID : %@ found\n",CFUUIDCreateString(NULL,peripheral.UUID));
+        //DYCBDEBUG(@"Services of peripheral with UUID : %@ found\n",CFUUIDCreateString(NULL,peripheral.UUID));
         //didDiscoverServices->for loop discoverCharacteristics
-        DYCOREBLUETOOTHLog(@"+=%@\n",peripheral.name);
-        DYCOREBLUETOOTHLog(@" +== %lu of service for UUID %@ \n",(unsigned long)peripheral.services.count,peripheral.identifier.UUIDString);
+        DYCBDEBUG(@"+=%@\n",peripheral.name);
+        DYCBDEBUG(@" +== %zd of service for UUID %@ \n",peripheral.services.count,peripheral.identifier.UUIDString);
         [self getAllCharacteristicsFromPeripheral:peripheral];
         
     }else {
-        DYCOREBLUETOOTHLog(@"Service discovery was unsuccessfull !\n");
+        DYCBDEBUG(@"Service discovery was unsuccessfull\n");
     }
     
 }
 
 - (void)getAllCharacteristicsFromPeripheral:(CBPeripheral *)p {
     for (CBService *service in p.services){
-        DYCOREBLUETOOTHLog(@" +==Service found with UUID: %@\n", service.UUID.UUIDString);
+        DYCBDEBUG(@"  +==Characteristics UUID: %@\n", service.UUID.UUIDString);
         //利用尋找到的service再去執行discoverCharacteristics
         [p discoverCharacteristics:nil forService:service];
     }
@@ -534,30 +500,66 @@
  from didDiscoverService for loop.
  */
 - (void)printCharactersticInfo:(CBCharacteristic *)characteristic {
-    DYCOREBLUETOOTHLog(@"---printCharactersticInfo---");
-    DYCOREBLUETOOTHLog(@"SERVICE UUID:%@",characteristic.service.UUID);
-    DYCOREBLUETOOTHLog(@"Characteristic UUID:%@",characteristic.UUID);
-    
-    DYCOREBLUETOOTHLog(@"Properties:%03lx",(unsigned long)characteristic.properties);
+    DYCBDEBUG(@"===characterstic info====");
+    DYCBDEBUG(@"SERVICE UUID:%@",characteristic.service.UUID);
+    DYCBDEBUG(@"Characteristic UUID:%@",characteristic.UUID);    
+    DYCBDEBUG(@"Properties:%03lx",(unsigned long)characteristic.properties);
+    [self printProperties:characteristic.properties];
+}
+
+- (void)printProperties:(CBCharacteristicProperties)characteristicProperties {
+    DYCBDEBUG(@"====Properties====");
+    if (characteristicProperties & CBCharacteristicPropertyBroadcast ) {
+        DYCBDEBUG(@"CBCharacteristicPropertyBroadcast");
+    }
+    if (characteristicProperties & CBCharacteristicPropertyRead ) {
+        DYCBDEBUG(@"CBCharacteristicPropertyRead");
+    }
+    if (characteristicProperties & CBCharacteristicPropertyWriteWithoutResponse ) {
+        DYCBDEBUG(@"CBCharacteristicPropertyWriteWithoutResponse");
+    }
+    if (characteristicProperties & CBCharacteristicPropertyWrite ) {
+        DYCBDEBUG(@"CBCharacteristicPropertyWrite");
+    }
+    if (characteristicProperties & CBCharacteristicPropertyNotify ) {
+        DYCBDEBUG(@"CBCharacteristicPropertyNotify");
+    }
+    if (characteristicProperties & CBCharacteristicPropertyIndicate ) {
+        DYCBDEBUG(@"CBCharacteristicPropertyIndicate");
+    }
+    if (characteristicProperties & CBCharacteristicPropertyAuthenticatedSignedWrites ) {
+        DYCBDEBUG(@"CBCharacteristicPropertyAuthenticatedSignedWrites");
+    }
+    if (characteristicProperties & CBCharacteristicPropertyExtendedProperties ) {
+        DYCBDEBUG(@"CBCharacteristicPropertyExtendedProperties");
+    }
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_6_0 || MAC_OS_X_VERSION_MAX_REQUIRED >= __MAC_10_9
+    if (characteristicProperties & CBCharacteristicPropertyNotifyEncryptionRequired ) {
+        DYCBDEBUG(@"CBCharacteristicPropertyNotifyEncryptionRequired");
+    }
+    if (characteristicProperties & CBCharacteristicPropertyIndicateEncryptionRequired ) {
+        DYCBDEBUG(@"CBCharacteristicPropertyIndicateEncryptionRequired");
+    }
+#endif
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error {
     
     CBService *s = [peripheral.services objectAtIndex:(peripheral.services.count - 1)];
-    DYCOREBLUETOOTHLog(@"=========== Service UUID %s ===========\n",[self CBUUIDToChar:service.UUID]);
+    DYCBDEBUG(@"==== Service UUID %s ====\n",[self CBUUIDToChar:service.UUID]);
     if (!error) {
-        DYCOREBLUETOOTHLog(@" %lu Characteristics of service ",(unsigned long)service.characteristics.count);
+        DYCBDEBUG(@"====%lu Characteristics of service====",(unsigned long)service.characteristics.count);
         for(CBCharacteristic *c in service.characteristics){
             [self printCharactersticInfo:c];
         }
-        //DYCOREBLUETOOTHLog(@"=== Finished set notification ===\n");
+        //DYCBDEBUG(@"=== Finished set notification ===\n");
         
         if ([[self delegate] respondsToSelector:@selector(peripheral:didDiscoverCharacteristicsForService:error:)])
         {
             [[self delegate] peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error];
         }
     }else {
-        DYCOREBLUETOOTHLog(@"Characteristic discorvery unsuccessfull !\n");
+        DYCBDEBUG(@"Characteristic discorvery unsuccessfull !\n");
         
     }
     if([self compareCBUUID:service.UUID UUID2:s.UUID]) {//利用此來確定整個流程都結束後才能設定通知
@@ -565,9 +567,9 @@
         {
             [[self delegate] didConnected:peripheral error:error];
         }else {
-            DYCOREBLUETOOTHLog(@"delegate can't run method didConnected");
+            DYCBDEBUG(@"delegate can't run method didConnected");
         }
-        DYCOREBLUETOOTHLog(@"=== Finished discovering characteristics ===\n");
+        DYCBDEBUG(@"=== Finished discovering characteristics ===\n");
         //全部服務都讀取完畢時才能使用！
         
     }
@@ -578,7 +580,7 @@
     {
         [[self delegate] didUpdateValueWithPeripheral:peripheral Characteristics:characteristic.UUID stringData:[self binaryAsciiDataToString:characteristic.value] binaryData:characteristic.value error:error];
     }else {
-        DYCOREBLUETOOTHLog(@"delegate can't run method didUpdateValueWithPeripheral");
+        DYCBDEBUG(@"delegate can't run method didUpdateValueWithPeripheral");
     }
     if ([[self delegate] respondsToSelector:@selector(didUpdateValue:stringData:binaryData:error:)])
     {
@@ -595,16 +597,16 @@
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error {
     if (error) {
-        DYCOREBLUETOOTHLog(@"Error in setting notification state for characteristic with UUID %@ on service with UUID %@ on peripheral with UUID %@",characteristic.UUID,characteristic.service.UUID,
+        DYCBDEBUG(@"Error in setting notification state for characteristic with UUID %@ on service with UUID %@ on peripheral with UUID %@",characteristic.UUID,characteristic.service.UUID,
                            peripheral.identifier.UUIDString);
         
-        DYCOREBLUETOOTHLog(@"Error code was %s", [[error description] cStringUsingEncoding:NSStringEncodingConversionAllowLossy]);
+        DYCBDEBUG(@"Error code was %s", [[error description] cStringUsingEncoding:NSStringEncodingConversionAllowLossy]);
     }
     if ([[self delegate] respondsToSelector:@selector(peripheral:didUpdateNotificationStateForCharacteristic:error:)])
     {
         [[self delegate] peripheral:peripheral didUpdateNotificationStateForCharacteristic:characteristic error:error];
     }
-    DYCOREBLUETOOTHLog(@"didUpdateNotificationStateForCharacteristic = %@ ",characteristic.UUID);
+    DYCBDEBUG(@"didUpdateNotificationStateForCharacteristic = %@ ",characteristic.UUID);
 }
 
 
@@ -622,7 +624,7 @@
     //memset(chardata, 0, sizeof(char)*(BLE_RX_BUFFER_LEN + 1));
     
     //[data getBytes:&chardata length:data.length];
-    //DYCOREBLUETOOTHLog(@"len=%lu",(unsigned long)data.length);
+    //DYCBDEBUG(@"len=%lu",(unsigned long)data.length);
     
     //NSString *marketPacket = [NSString stringWithCString:chardata encoding:NSASCIIStringEncoding];
     //先前使用方法會造成資料中間有hex:00時成為null而造成轉換資料不正確
@@ -724,7 +726,7 @@
         [nsmData appendBytes:b1 length:1];
         
     }
-    DYCOREBLUETOOTHLog(@"convHexStringToHex:%@",[nsmData description]);
+    DYCBDEBUG(@"convHexStringToHex:%@",[nsmData description]);
     return nsmData;
 }
 
@@ -733,26 +735,26 @@
 - (void)writeValue:(CBUUID *) serviceUUID characteristicUUID:(CBUUID *) characteristicUUID peripheral:(CBPeripheral *)p data:(NSData *)data {
     CBService *service = [self getServiceFromUUID:serviceUUID p:p];
     if (!service) {
-        DYCOREBLUETOOTHLog(@"Could not find service with UUID %@ on peripheral with UUID %@",serviceUUID,
+        DYCBDEBUG(@"Could not find service with UUID %@ on peripheral with UUID %@",serviceUUID,
                            p.identifier.UUIDString);
         return;
     }
     CBCharacteristic *characteristic = [self getCharacteristicFromUUID:characteristicUUID service:service];
     if (!characteristic) {
-        DYCOREBLUETOOTHLog(@"Could not find characteristic with UUID %@ on service with UUID %@ on peripheral with UUID %@",characteristicUUID,serviceUUID,
+        DYCBDEBUG(@"Could not find characteristic with UUID %@ on service with UUID %@ on peripheral with UUID %@",characteristicUUID,serviceUUID,
                            p.identifier.UUIDString);
         return;
     }else{
-        DYCOREBLUETOOTHLog(@"writeValue-characteristic %@",characteristic.UUID);
+        DYCBDEBUG(@"write to characteristic value:%@",characteristic.UUID);
     }
     //Marked
     if ((characteristic.properties & CBCharacteristicPropertyWriteWithoutResponse) == 0) {
         [p writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithResponse];
-        NSLog(@"CBCharacteristicWriteWithResponse");
+//        NSLog(@"CBCharacteristicWriteWithResponse");
     }
     else {
         [p writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithoutResponse];
-        NSLog(@"CBCharacteristicWriteWithoutResponse");
+//        NSLog(@"CBCharacteristicWriteWithoutResponse");
     }
     
 }
@@ -762,24 +764,24 @@
     data = [data subdataWithRange:NSMakeRange(0, [data length])];
     CBService *service = [self getServiceFromUUID:serviceUUID p:p];
     if (!service) {
-        DYCOREBLUETOOTHLog(@"Could not find service with UUID %@ on peripheral with UUID %@",serviceUUID,
+        DYCBDEBUG(@"Could not find service with UUID %@ on peripheral with UUID %@",serviceUUID,
                            p.identifier.UUIDString);
         return;
     }
     CBCharacteristic *characteristic = [self getCharacteristicFromUUID:characteristicUUID service:service];
     if (!characteristic) {
-        DYCOREBLUETOOTHLog(@"Could not find characteristic with UUID %@ on service with UUID %@ on peripheral with UUID %@",characteristicUUID,serviceUUID,
+        DYCBDEBUG(@"Could not find characteristic with UUID %@ on service with UUID %@ on peripheral with UUID %@",characteristicUUID,serviceUUID,
                            p.identifier.UUIDString);
         return;
     }
     //Marked
     if ((characteristic.properties & CBCharacteristicPropertyWriteWithoutResponse) == 0) {
         [p writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithResponse];
-        NSLog(@"CBCharacteristicWriteWithResponse");
+//        NSLog(@"CBCharacteristicWriteWithResponse");
     }
     else {
         [p writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithoutResponse];
-        NSLog(@"CBCharacteristicWriteWithoutResponse");
+//        NSLog(@"CBCharacteristicWriteWithoutResponse");
     }
 }
 
@@ -790,17 +792,18 @@
     CBService *service = [self getServiceFromUUID:serviceUUID p:p];
     if (!service) {
         if (p.identifier == NULL) return; // zach ios6 added
-        DYCOREBLUETOOTHLog(@"Could not find service with UUID on peripheral with UUID \n");
+        DYCBDEBUG(@"Could not find service with UUID on peripheral with UUID \n");
         return;
     }
     CBCharacteristic *characteristic = [self getCharacteristicFromUUID:characteristicUUID service:service];
     if (!characteristic) {
         if (p.identifier == NULL) return; // zach ios6 added
-        DYCOREBLUETOOTHLog(@"Could not find characteristic with UUID  on service with UUID  on peripheral with UUID\n");
+        DYCBDEBUG(@"Could not find characteristic with UUID  on service with UUID  on peripheral with UUID\n");
         return;
     }
+    
     [p setNotifyValue:on forCharacteristic:characteristic];
-    DYCOREBLUETOOTHLog(@"setNotifyValue ok - %@",characteristic.UUID);
+    DYCBDEBUG(@"registerNotification ok - service:%@ characterstic:%@",service.UUID ,characteristic.UUID);
 }
 
 - (void)registerNotificationWithIntUUID:(UInt16)serviceUUID characteristicUUID:(UInt16)characteristicUUID peripheral:(CBPeripheral *)p on:(BOOL)on {
@@ -831,13 +834,13 @@
     NSData* data = [stringData dataUsingEncoding:NSUTF8StringEncoding];
     data = [data subdataWithRange:NSMakeRange(0, [data length])];
     [self writeUARTWithBin:data peripheral:connectedPeripheral];
-    DYCOREBLUETOOTHLog(@"writeUART= (%@)\n",stringData);
+    DYCBDEBUG(@"write string= (%@)\n",stringData);
     
 }
 
 - (void)writeUARTWithDoubleHexString:(NSString *)stringData {
     [self writeUARTWithBin:[self dobuleHexStringToHexData:stringData] peripheral:connectedPeripheral];
-    DYCOREBLUETOOTHLog(@"writeUARTWithDoubleHexString= (%@)\n",stringData);
+    DYCBDEBUG(@"write string= (%@)\n",stringData);
     
 }
 
@@ -845,10 +848,10 @@
     
     if ((_writeUartCharacteristicUUID128 == nil) && (_writeUartServiceUUID128 ==nil)) {
         [self writeValue:[self intUUIDToCBUUID:_writeUartServiceUUID] characteristicUUID:[self intUUIDToCBUUID:_writeUartCharacteristicUUID] peripheral:p data: data];
-        DYCOREBLUETOOTHLog(@"writeUART SUUID= (%04x) CUUID=(%04x)\n",_writeUartServiceUUID,_writeUartCharacteristicUUID);
+        DYCBDEBUG(@"write bin SUUID= (%04x) CUUID=(%04x)\n",_writeUartServiceUUID,_writeUartCharacteristicUUID);
     }else {
         [self writeValue:_writeUartServiceUUID128 characteristicUUID:_writeUartCharacteristicUUID128 peripheral:p data: data];
-        DYCOREBLUETOOTHLog(@"writeUART SUUID= (%@)   CUUID=(%@)\n",[_writeUartServiceUUID128 UUIDString],[_writeUartCharacteristicUUID128 UUIDString]);
+        DYCBDEBUG(@"write bin SUUID= (%@)   CUUID=(%@)\n",[_writeUartServiceUUID128 UUIDString],[_writeUartCharacteristicUUID128 UUIDString]);
         
     }
 
@@ -872,7 +875,7 @@
         /* uint16 bpm */
         bpm = CFSwapInt16LittleToHost(*(uint16_t *)(&reportData[1]));
     }
-    //DYCOREBLUETOOTHLog(@"bpm is %hu",bpm);
+    //DYCBDEBUG(@"bpm is %hu",bpm);
     return bpm;
 }
 //
@@ -887,7 +890,7 @@
     NSArray *storedDevices  = [[NSUserDefaults standardUserDefaults] arrayForKey:@"DYStoredDevices"];
     
     if (![storedDevices isKindOfClass:[NSArray class]]) {
-        DYCOREBLUETOOTHLog(@"No stored array to load");
+        DYCBDEBUG(@"No stored array to load");
         return;
     }
     
@@ -916,7 +919,7 @@
     CFStringRef     uuidString      = NULL;
     
     if (![storedDevices isKindOfClass:[NSArray class]]) {
-        DYCOREBLUETOOTHLog(@"Can't find/create an array to store the uuid");
+        DYCBDEBUG(@"Can't find/create an array to store the uuid");
         return;
     }
     

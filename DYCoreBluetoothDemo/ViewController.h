@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DYCoreBluetooth.h"
 
-@interface ViewController : UIViewController
+@interface ViewController : UIViewController <DYCoreBluetoohDelegate>
 
 @property (weak) IBOutlet UITextField *receiveData;
 
