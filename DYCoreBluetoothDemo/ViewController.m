@@ -39,7 +39,9 @@
 
 - (IBAction)btnBLE_reConnect:(id)sender {
     connectPeripheralArray=[NSMutableArray array];
-    [dyble connectWithUUIDString:@"419D6B15-1F6C-EE7B-7751-2748ACA0D7C3"];
+    [dyble connectWithUUIDString:@"EBBA38B0-5222-4D47-A85F-054427E0E952"];
+    //BLESERIAL-0
+//    [dyble connectWithUUIDString:@"20F6921C-0986-40A9-9335-20F82919A98F"];
 }
 - (IBAction)btnBLE_reConnect2:(id)sender {
     NSLog(@"%@",[dyble connectedPeripheral].name);

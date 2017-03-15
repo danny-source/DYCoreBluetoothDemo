@@ -460,6 +460,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
+					"DYCOREBLUETOOTH_DEBUG=1",
 				);
 				INFOPLIST_FILE = "DYCoreBluetoothDemo/DYCoreBluetoothDemo-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;

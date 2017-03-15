@@ -9,8 +9,8 @@
 #import "DYCoreBluetooth.h"
 #import "DYSystem.h"
 //
-#define kSCAN_TIMEOUT 3.0f                  // Timeout value for scanning
-#define kRECONNECT_TIMEOUT 5.0f              // Timeout value for scanning
+#define kSCAN_TIMEOUT 3.0f                                      // Timeout value for scanning
+#define kRECONNECT_TIMEOUT 5.0f                                 // Timeout value for scanning
 
 @interface DYCoreBluetooth()
 
@@ -38,6 +38,8 @@
 @synthesize delegate;
 @synthesize CM;
 @synthesize connectedPeripheral;
+@synthesize reConnectTimer;
+@synthesize scanningTimer;
 @synthesize isNeedScanningTimeout;
 //
 //@synthesize scanTimer;
@@ -65,7 +67,9 @@
         _writeUartCharacteristicUUID=SERIAL_UART_TX_CHARACTERISTIC;
         _writeUartServiceUUID128 = nil;
         _writeUartCharacteristicUUID128 = nil;
-        isNeedScanningTimeout = NO;
+        self.isNeedScanningTimeout = YES;
+        self.reConnectTimer = @kRECONNECT_TIMEOUT;
+        self.scanningTimer = @kSCAN_TIMEOUT;
     }
     return self;
 }
@@ -107,14 +111,14 @@
 - (void)disconnect:(CBPeripheral*)peripheral {
     [_reConnectTimer invalidate];
     if (peripheral!=NULL){
-        DYCBDEBUG(@"disconnect by %@",peripheral.name);
+        DYCBDEBUGLN(@"disconnect by %@",peripheral.name);
         [CM cancelPeripheralConnection:peripheral];
     }
 }
 - (void)disconnectCurrentPeripheral {
     if (connectedPeripheral!=NULL)
     {
-        DYCBDEBUG(@"disconnect by %@",connectedPeripheral.name);
+        DYCBDEBUGLN(@"disconnect by %@",connectedPeripheral.name);
         [CM cancelPeripheralConnection:connectedPeripheral];
     }
 }
@@ -127,10 +131,10 @@
     NSArray *peripheralArray = [CM retrievePeripheralsWithIdentifiers:[NSArray arrayWithObject:uuid]];
     
     if (peripheralArray.count>0) {
-        DYCBDEBUG(@"reConnect by %@",[peripheralArray objectAtIndex:0]);
+        DYCBDEBUGLN(@"reConnect by %@",[peripheralArray objectAtIndex:0]);
         [self connect:[peripheralArray objectAtIndex:0]];
     }else {
-        DYCBDEBUG(@"reConnect fail by");
+        DYCBDEBUGLN(@"reConnect fail by");
     }
     
 #else
@@ -138,8 +142,16 @@
     [CM retrievePeripherals:[NSArray arrayWithObject:(__bridge id)(uuid) ]];
 #endif
     [_reConnectTimer invalidate];
-    _reConnectTimer = [NSTimer scheduledTimerWithTimeInterval:kRECONNECT_TIMEOUT target:self selector:@selector(reConnectTimeout:) userInfo:nil repeats:NO];
-    DYCBDEBUG(@"reConnect timer started ,Interval by %zd",kRECONNECT_TIMEOUT);
+    _reConnectTimer = [NSTimer scheduledTimerWithTimeInterval:[self.reConnectTimer floatValue] target:self selector:@selector(reConnectTimeout:) userInfo:nil repeats:NO];
+    DYCBDEBUGLN(@"reConnect timer started ,Interval by %zd",[self.reConnectTimer floatValue]);
+}
+
+- (NSArray *)retrievePeripheralsWithServices:(NSArray *) strServiceUUID {
+    NSMutableArray *arrayCBUUID = [NSMutableArray array];
+    for (NSString *uuid in strServiceUUID) {
+        [arrayCBUUID addObject:[CBUUID UUIDWithString:uuid]];
+    }
+    return [CM retrieveConnectedPeripheralsWithServices:arrayCBUUID];
 }
 
 - (void)reConnectWithStringUUIDArray:(NSArray*) uuidStringArray {
@@ -160,12 +172,13 @@
 #endif
     }
     
-    DYCBDEBUG(@"reConnectWithStringUUIDArray %lu",(unsigned long)uuidStringArray.count);
-    _reConnectTimer = [NSTimer scheduledTimerWithTimeInterval:kRECONNECT_TIMEOUT target:self selector:@selector(reConnectTimeout:) userInfo:nil repeats:NO];
+    DYCBDEBUGLN(@"reConnectWithStringUUIDArray %lu",(unsigned long)uuidStringArray.count);
+    _reConnectTimer = [NSTimer scheduledTimerWithTimeInterval:[self.reConnectTimer floatValue] target:self selector:@selector(reConnectTimeout:) userInfo:nil repeats:NO];
+    DYCBDEBUGLN(@"reConnect timer started ,Interval by %zd",[self.reConnectTimer floatValue]);
 }
 
 - (void)reConnectTimeout:(NSTimer*)timer {
-    DYCBDEBUG(@"reConnectTimeout");
+    DYCBDEBUGLN(@"reConnectTimeout");
     _isReConnectTimeout = YES;
     _reConnectTimer=timer;
     [self disconnect:connectedPeripheral];
@@ -198,10 +211,10 @@
         NSArray *uuidArray  = @[[CBUUID UUIDWithString:uuidString]];
         [CM scanForPeripheralsWithServices:uuidArray options:options];
     }
-    DYCBDEBUG(@"scanning is started");
-    if (!isNeedScanningTimeout) {
-        _scanTimer=[NSTimer scheduledTimerWithTimeInterval:kSCAN_TIMEOUT target:self selector:@selector(scanTimeout:) userInfo:nil repeats:NO];
-        DYCBDEBUG(@"scanning timmer started,Interval by  %zd",kSCAN_TIMEOUT);
+    DYCBDEBUGLN(@"scanning is started");
+    if (isNeedScanningTimeout) {
+        _scanTimer=[NSTimer scheduledTimerWithTimeInterval:[self.scanningTimer floatValue] target:self selector:@selector(scanTimeout:) userInfo:nil repeats:NO];
+        DYCBDEBUGLN(@"scanning timmer started,Interval by  %zd",[self.scanningTimer floatValue]);
     }else {
         [_scanTimer invalidate];
     }
@@ -214,15 +227,16 @@
     if (CM!=NULL){
         [CM stopScan];
     }else{
-//        DYCBDEBUG(@"CM is Null!");
+//        DYCBDEBUGLN(@"CM is Null!");
     }
     [_scanTimer invalidate];
-    DYCBDEBUG(@"scanning is stop");
+    [_scanTimer fire];
+    DYCBDEBUGLN(@"scanning is stop");
 }
 
 
 - (void)scanTimeout:(NSTimer*)timer {
-    DYCBDEBUG(@"scanning is timeout");
+    DYCBDEBUGLN(@"scanning is timeout");
     _scanTimer=timer;
     [self stopScanning];
     if ([[self delegate] respondsToSelector:@selector(didDiscoverPeripheral:)])
@@ -271,7 +285,7 @@
             [statusMessage appendString:@"Unknown"];
             break;
     }
-    DYCBDEBUG(@"state string:%@",statusMessage);
+    DYCBDEBUGLN(@"state string:%@",statusMessage);
     if ([[self delegate] respondsToSelector:@selector(didUpdateState:message:status:)])
     {
         [[self delegate] didUpdateState:isAvailable message:statusMessage status:(DYCBCentralManagerState)cManager.state];
@@ -300,8 +314,8 @@
     //add peripheral and replace duplicate
     if (peripheral.identifier==NULL)
     {
-        DYCBDEBUG(@"%@",@"pheripheral identifier is NULL\n");
-        DYCBDEBUG(@"%@",discoverPeripheralStatus);
+        DYCBDEBUGLN(@"%@",@"pheripheral identifier is NULL\n");
+        DYCBDEBUGLN(@"%@",discoverPeripheralStatus);
         return;
     }
     if ((!_foundPeripherals)) {
@@ -336,14 +350,14 @@
     }
     
     [discoverPeripheralStatus appendString:@"====DiscoverPeripheral end====\n"];
-    DYCBDEBUG(@"%@",discoverPeripheralStatus);
+    DYCBDEBUGLN(@"%@",discoverPeripheralStatus);
     
 }
 
 
 - (void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral {
-    DYCBDEBUG(@"====connected====");
-    DYCBDEBUG(@"peripheral : %@\nUUID:%@\n",peripheral.name, peripheral.identifier.UUIDString);
+    DYCBDEBUGLN(@"====connected====");
+    DYCBDEBUGLN(@"peripheral : %@\nUUID:%@\n",peripheral.name, peripheral.identifier.UUIDString);
     
     [_reConnectTimer invalidate];
     peripheral.delegate=self;
@@ -358,11 +372,11 @@
     //關閉idleTimer
     [UIApplication sharedApplication].idleTimerDisabled=YES;
 #endif
-    DYCBDEBUG(@"================");
+    DYCBDEBUGLN(@"================");
 }
 
 - (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error {
-    DYCBDEBUG(@"fail to connect\n");
+    DYCBDEBUGLN(@"fail to connect\n");
     
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
     //開啟idleTimer
@@ -376,7 +390,7 @@
 }
 
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error {
-    DYCBDEBUG(@"disconnect:%@\n",peripheral.name);
+    DYCBDEBUGLN(@"disconnect:%@\n",peripheral.name);
     //if (!(peripheral.state == CBPeripheralStateConnected)) {
     if (_isReConnectTimeout) {
         //連線中或是已斷線的話都將通知傳至FailToConnect，讓重新連線Timeout能夠轉到這
@@ -395,9 +409,9 @@
     if (peripherals.count>0){
         _connectionTempPeripheral=[peripherals objectAtIndex:0];
         [CM connectPeripheral:_connectionTempPeripheral options:nil];
-        DYCBDEBUG(@"====reconnect====");
-        DYCBDEBUG(@"name:%@\n",_connectionTempPeripheral.name);
-        DYCBDEBUG(@"UUID:%@\n",_connectionTempPeripheral.identifier.UUIDString);
+        DYCBDEBUGLN(@"====reconnect====");
+        DYCBDEBUGLN(@"name:%@\n",_connectionTempPeripheral.name);
+        DYCBDEBUGLN(@"UUID:%@\n",_connectionTempPeripheral.identifier.UUIDString);
         connectedPeripheral=_connectionTempPeripheral;
     }
     if ([[self delegate] respondsToSelector:@selector(didRetrieveConnected:)])
@@ -410,8 +424,8 @@
     if (peripherals.count>0){
         connectedPeripheral=[peripherals objectAtIndex:0];
         [CM connectPeripheral:connectedPeripheral options:nil];
-        DYCBDEBUG(@"Reconnect Device Name\n%@",connectedPeripheral.name);
-        DYCBDEBUG(@"UUID %@",connectedPeripheral.identifier.UUIDString);
+        DYCBDEBUGLN(@"Reconnect Device Name\n%@",connectedPeripheral.name);
+        DYCBDEBUGLN(@"UUID %@",connectedPeripheral.identifier.UUIDString);
         
         if ([[self delegate] respondsToSelector:@selector(didRetrievePeripheral:)])
         {
@@ -430,7 +444,7 @@
     {
         [delegate peripheralDidUpdateName:peripheral];
     }
-    DYCBDEBUG(@"update peripheral name:%@ \n%@\n",peripheral.identifier.UUIDString ,peripheral.name);
+    DYCBDEBUGLN(@"update peripheral name:%@ \n%@\n",peripheral.identifier.UUIDString ,peripheral.name);
 }
 
 - (void)peripheralDidInvalidateServices:(CBPeripheral *)peripheral {
@@ -447,7 +461,7 @@
     {
         [delegate didUpdateRSSI:RSSI peripheral:peripheral error:error];
     }
-    DYCBDEBUG(@"didUpdateRSSI(>iOS8):%@ \n%@\n",peripheral.identifier.UUIDString ,RSSI);
+    DYCBDEBUGLN(@"didUpdateRSSI(>iOS8):%@ \n%@\n",peripheral.identifier.UUIDString ,RSSI);
 }
 
 #else
@@ -456,7 +470,7 @@
     {
         [delegate didUpdateRSSI:peripheral.RSSI peripheral:peripheral error:error];
     }
-    DYCBDEBUG(@"didUpdateRSSI:%@ \n%@\n",peripheral.identifier.UUIDString ,peripheral.RSSI);
+    DYCBDEBUGLN(@"didUpdateRSSI:%@ \n%@\n",peripheral.identifier.UUIDString ,peripheral.RSSI);
 }
 #endif
 
@@ -477,21 +491,21 @@
     if( peripheral.identifier == NULL  ) return;
     
     if (!error) {
-        //DYCBDEBUG(@"Services of peripheral with UUID : %@ found\n",CFUUIDCreateString(NULL,peripheral.UUID));
+        //DYCBDEBUGLN(@"Services of peripheral with UUID : %@ found\n",CFUUIDCreateString(NULL,peripheral.UUID));
         //didDiscoverServices->for loop discoverCharacteristics
-        DYCBDEBUG(@"+=%@\n",peripheral.name);
-        DYCBDEBUG(@" +== %zd of service for UUID %@ \n",peripheral.services.count,peripheral.identifier.UUIDString);
+        DYCBDEBUGLN(@"+=%@\n",peripheral.name);
+        DYCBDEBUGLN(@" +== %zd of service for UUID %@ \n",peripheral.services.count,peripheral.identifier.UUIDString);
         [self getAllCharacteristicsFromPeripheral:peripheral];
         
     }else {
-        DYCBDEBUG(@"Service discovery was unsuccessfull\n");
+        DYCBDEBUGLN(@"Service discovery was unsuccessfull\n");
     }
     
 }
 
 - (void)getAllCharacteristicsFromPeripheral:(CBPeripheral *)p {
     for (CBService *service in p.services){
-        DYCBDEBUG(@"  +==Characteristics UUID: %@\n", service.UUID.UUIDString);
+        DYCBDEBUGLN(@"  +==Characteristics UUID: %@\n", service.UUID.UUIDString);
         //利用尋找到的service再去執行discoverCharacteristics
         [p discoverCharacteristics:nil forService:service];
     }
@@ -500,45 +514,56 @@
  from didDiscoverService for loop.
  */
 - (void)printCharactersticInfo:(CBCharacteristic *)characteristic {
-    DYCBDEBUG(@"===characterstic info====");
-    DYCBDEBUG(@"SERVICE UUID:%@",characteristic.service.UUID);
-    DYCBDEBUG(@"Characteristic UUID:%@",characteristic.UUID);    
-    DYCBDEBUG(@"Properties:%03lx",(unsigned long)characteristic.properties);
+    DYCBDEBUGLN(@"+===characterstic info====");
+    DYCBDEBUGLN(@" SERVICE UUID:%@",characteristic.service.UUID);
+    DYCBDEBUGLN(@" Characteristic UUID:%@",characteristic.UUID);
+    DYCBDEBUGLN(@" Properties:%03lx",(unsigned long)characteristic.properties);
     [self printProperties:characteristic.properties];
+    //
+    DYCBDEBUGLN(@" Description:%@",characteristic.description);
+}
+
+- (void)printDescriptiorsInfo:(CBCharacteristic *)characteristic {
+    DYCBDEBUGLN(@"++===descriptiors info====");
+    DYCBDEBUGLN(@"++===number of %zd",characteristic.descriptors.count);
+    for (CBDescriptor *descriptor in characteristic.descriptors) {
+        DYCBDEBUGLN(@"+++Descriptiors UUID:%@",descriptor.UUID.UUIDString);
+        DYCBDEBUGLN(@"+++%@",descriptor.description);
+    }
 }
 
 - (void)printProperties:(CBCharacteristicProperties)characteristicProperties {
-    DYCBDEBUG(@"====Properties====");
+    DYCBDEBUGLN(@"+====Properties====");
     if (characteristicProperties & CBCharacteristicPropertyBroadcast ) {
-        DYCBDEBUG(@"CBCharacteristicPropertyBroadcast");
+        DYCBDEBUGLN(@" CBCharacteristicPropertyBroadcast");
     }
     if (characteristicProperties & CBCharacteristicPropertyRead ) {
-        DYCBDEBUG(@"CBCharacteristicPropertyRead");
+        DYCBDEBUGLN(@" CBCharacteristicPropertyRead");
     }
     if (characteristicProperties & CBCharacteristicPropertyWriteWithoutResponse ) {
-        DYCBDEBUG(@"CBCharacteristicPropertyWriteWithoutResponse");
+        DYCBDEBUGLN(@" CBCharacteristicPropertyWriteWithoutResponse");
     }
     if (characteristicProperties & CBCharacteristicPropertyWrite ) {
-        DYCBDEBUG(@"CBCharacteristicPropertyWrite");
+        DYCBDEBUGLN(@" CBCharacteristicPropertyWrite");
     }
     if (characteristicProperties & CBCharacteristicPropertyNotify ) {
-        DYCBDEBUG(@"CBCharacteristicPropertyNotify");
+        DYCBDEBUGLN(@" CBCharacteristicPropertyNotify");
     }
     if (characteristicProperties & CBCharacteristicPropertyIndicate ) {
-        DYCBDEBUG(@"CBCharacteristicPropertyIndicate");
+        DYCBDEBUGLN(@" CBCharacteristicPropertyIndicate");
     }
     if (characteristicProperties & CBCharacteristicPropertyAuthenticatedSignedWrites ) {
-        DYCBDEBUG(@"CBCharacteristicPropertyAuthenticatedSignedWrites");
+        DYCBDEBUGLN(@" CBCharacteristicPropertyAuthenticatedSignedWrites");
     }
     if (characteristicProperties & CBCharacteristicPropertyExtendedProperties ) {
-        DYCBDEBUG(@"CBCharacteristicPropertyExtendedProperties");
+        DYCBDEBUGLN(@" CBCharacteristicPropertyExtendedProperties");
     }
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_6_0 || MAC_OS_X_VERSION_MAX_REQUIRED >= __MAC_10_9
     if (characteristicProperties & CBCharacteristicPropertyNotifyEncryptionRequired ) {
-        DYCBDEBUG(@"CBCharacteristicPropertyNotifyEncryptionRequired");
+        DYCBDEBUGLN(@" CBCharacteristicPropertyNotifyEncryptionRequired");
     }
     if (characteristicProperties & CBCharacteristicPropertyIndicateEncryptionRequired ) {
-        DYCBDEBUG(@"CBCharacteristicPropertyIndicateEncryptionRequired");
+        DYCBDEBUGLN(@" CBCharacteristicPropertyIndicateEncryptionRequired");
     }
 #endif
 }
@@ -546,20 +571,21 @@
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error {
     
     CBService *s = [peripheral.services objectAtIndex:(peripheral.services.count - 1)];
-    DYCBDEBUG(@"==== Service UUID %s ====\n",[self CBUUIDToChar:service.UUID]);
+    DYCBDEBUGLN(@"==== Service UUID %s ====\n",[self CBUUIDToChar:service.UUID]);
     if (!error) {
-        DYCBDEBUG(@"====%lu Characteristics of service====",(unsigned long)service.characteristics.count);
+        DYCBDEBUGLN(@"+===%lu Characteristics of service====",(unsigned long)service.characteristics.count);
         for(CBCharacteristic *c in service.characteristics){
             [self printCharactersticInfo:c];
+            [peripheral discoverDescriptorsForCharacteristic:c];
         }
-        //DYCBDEBUG(@"=== Finished set notification ===\n");
+        //DYCBDEBUGLN(@"=== Finished set notification ===\n");
         
         if ([[self delegate] respondsToSelector:@selector(peripheral:didDiscoverCharacteristicsForService:error:)])
         {
             [[self delegate] peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error];
         }
     }else {
-        DYCBDEBUG(@"Characteristic discorvery unsuccessfull !\n");
+        DYCBDEBUGLN(@"Characteristic discorvery unsuccessfull !\n");
         
     }
     if([self compareCBUUID:service.UUID UUID2:s.UUID]) {//利用此來確定整個流程都結束後才能設定通知
@@ -567,12 +593,16 @@
         {
             [[self delegate] didConnected:peripheral error:error];
         }else {
-            DYCBDEBUG(@"delegate can't run method didConnected");
+            DYCBDEBUGLN(@"delegate can't run method didConnected");
         }
-        DYCBDEBUG(@"=== Finished discovering characteristics ===\n");
+        DYCBDEBUGLN(@"=== Finished discovering characteristics ===\n");
         //全部服務都讀取完畢時才能使用！
         
     }
+}
+
+- (void)peripheral:(CBPeripheral *)peripheral didDiscoverDescriptorsForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error {
+    [self printDescriptiorsInfo:characteristic];
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error {
@@ -580,7 +610,7 @@
     {
         [[self delegate] didUpdateValueWithPeripheral:peripheral Characteristics:characteristic.UUID stringData:[self binaryAsciiDataToString:characteristic.value] binaryData:characteristic.value error:error];
     }else {
-        DYCBDEBUG(@"delegate can't run method didUpdateValueWithPeripheral");
+        DYCBDEBUGLN(@"delegate can't run method didUpdateValueWithPeripheral");
     }
     if ([[self delegate] respondsToSelector:@selector(didUpdateValue:stringData:binaryData:error:)])
     {
@@ -597,18 +627,17 @@
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error {
     if (error) {
-        DYCBDEBUG(@"Error in setting notification state for characteristic with UUID %@ on service with UUID %@ on peripheral with UUID %@",characteristic.UUID,characteristic.service.UUID,
+        DYCBDEBUGLN(@"Error in setting notification state for characteristic with UUID %@ on service with UUID %@ on peripheral with UUID %@",characteristic.UUID,characteristic.service.UUID,
                            peripheral.identifier.UUIDString);
         
-        DYCBDEBUG(@"Error code was %s", [[error description] cStringUsingEncoding:NSStringEncodingConversionAllowLossy]);
+        DYCBDEBUGLN(@"Error code was %s", [[error description] cStringUsingEncoding:NSStringEncodingConversionAllowLossy]);
     }
     if ([[self delegate] respondsToSelector:@selector(peripheral:didUpdateNotificationStateForCharacteristic:error:)])
     {
         [[self delegate] peripheral:peripheral didUpdateNotificationStateForCharacteristic:characteristic error:error];
     }
-    DYCBDEBUG(@"didUpdateNotificationStateForCharacteristic = %@ ",characteristic.UUID);
+    DYCBDEBUGLN(@"didUpdateNotificationStateForCharacteristic = %@ ",characteristic.UUID);
 }
-
 
 
 
@@ -624,7 +653,7 @@
     //memset(chardata, 0, sizeof(char)*(BLE_RX_BUFFER_LEN + 1));
     
     //[data getBytes:&chardata length:data.length];
-    //DYCBDEBUG(@"len=%lu",(unsigned long)data.length);
+    //DYCBDEBUGLN(@"len=%lu",(unsigned long)data.length);
     
     //NSString *marketPacket = [NSString stringWithCString:chardata encoding:NSASCIIStringEncoding];
     //先前使用方法會造成資料中間有hex:00時成為null而造成轉換資料不正確
@@ -704,6 +733,15 @@
     return nil; //Characteristic not found on this service
 }
 
+- (CBDescriptor *)getDescriptorFromUUID:(CBUUID *)UUID characteristic:(CBCharacteristic*)characteristic {
+    
+    for (CBDescriptor* d in characteristic.descriptors){
+        if ([self compareCBUUID:d.UUID UUID2:UUID])
+            return d;
+    }
+    return nil; //Characteristic not found on this service
+}
+
 - (UInt16)swap:(UInt16)s {
     UInt16 temp = s << 8;
     temp |= (s >> 8);
@@ -726,26 +764,94 @@
         [nsmData appendBytes:b1 length:1];
         
     }
-    DYCBDEBUG(@"convHexStringToHex:%@",[nsmData description]);
+    DYCBDEBUGLN(@"convHexStringToHex:%@",[nsmData description]);
     return nsmData;
 }
 
 #pragma mark Public method
+- (void)readValue:(CBUUID *) serviceUUID characteristicUUID:(CBUUID *) characteristicUUID peripheral:(CBPeripheral *)p {
+    CBService *service = [self getServiceFromUUID:serviceUUID p:p];
+    if (!service) {
+        DYCBDEBUGLN(@"Could not find service with UUID %@ on peripheral with UUID %@",serviceUUID,
+                  p.identifier.UUIDString);
+        return;
+    }
+    CBCharacteristic *characteristic = [self getCharacteristicFromUUID:characteristicUUID service:service];
+    if (!characteristic) {
+        DYCBDEBUGLN(@"Could not find characteristic with UUID %@ on service with UUID %@ on peripheral with UUID %@",characteristicUUID,serviceUUID,
+                  p.identifier.UUIDString);
+        return;
+    }else{
+        DYCBDEBUGLN(@"write to characteristic value:%@",characteristic.UUID);
+    }
+    //Marked
+    [p readValueForCharacteristic:characteristic];
+}
+
+- (void)readValue:(CBUUID *) serviceUUID characteristicUUID:(CBUUID *) characteristicUUID descriptorUUID:(CBUUID *)descriptorUUID peripheral:(CBPeripheral *)p {
+    CBService *service = [self getServiceFromUUID:serviceUUID p:p];
+    if (!service) {
+        DYCBDEBUGLN(@"Could not find service with UUID %@ on peripheral with UUID %@",serviceUUID,
+                  p.identifier.UUIDString);
+        return;
+    }
+    CBCharacteristic *characteristic = [self getCharacteristicFromUUID:characteristicUUID service:service];
+    if (!characteristic) {
+        DYCBDEBUGLN(@"Could not find characteristic with UUID %@ on service with UUID %@ on peripheral with UUID %@",characteristicUUID,serviceUUID,
+                  p.identifier.UUIDString);
+        return;
+    }
+    CBDescriptor *descriptor = [self getDescriptorFromUUID:descriptorUUID characteristic:characteristic];
+    if (!descriptor) {
+        DYCBDEBUGLN(@"Could not find descriptor %@ on characteristic with UUID %@ on service with UUID %@ on peripheral with UUID %@",descriptorUUID,characteristicUUID,serviceUUID,
+                  p.identifier.UUIDString);
+        return;
+    }else{
+        DYCBDEBUGLN(@"write to descriptor value:%@",descriptor.UUID);
+    }
+    
+    [p readValueForDescriptor:descriptor];
+}
+
+- (void)writeValue:(CBUUID *) serviceUUID characteristicUUID:(CBUUID *) characteristicUUID descriptorUUID:(CBUUID *)descriptorUUID peripheral:(CBPeripheral *)p data:(NSData *)data {
+    CBService *service = [self getServiceFromUUID:serviceUUID p:p];
+    if (!service) {
+        DYCBDEBUGLN(@"Could not find service with UUID %@ on peripheral with UUID %@",serviceUUID,
+                  p.identifier.UUIDString);
+        return;
+    }
+    CBCharacteristic *characteristic = [self getCharacteristicFromUUID:characteristicUUID service:service];
+    if (!characteristic) {
+        DYCBDEBUGLN(@"Could not find characteristic with UUID %@ on service with UUID %@ on peripheral with UUID %@",characteristicUUID,serviceUUID,
+                  p.identifier.UUIDString);
+        return;
+    }
+    CBDescriptor *descriptor = [self getDescriptorFromUUID:descriptorUUID characteristic:characteristic];
+    if (!descriptor) {
+        DYCBDEBUGLN(@"Could not find descriptor %@ on characteristic with UUID %@ on service with UUID %@ on peripheral with UUID %@",descriptorUUID,characteristicUUID,serviceUUID,
+                  p.identifier.UUIDString);
+        return;
+    }else{
+        DYCBDEBUGLN(@"write to descriptor value:%@",descriptor.UUID);
+    }
+    
+    [p writeValue:data forDescriptor:descriptor];
+}
 
 - (void)writeValue:(CBUUID *) serviceUUID characteristicUUID:(CBUUID *) characteristicUUID peripheral:(CBPeripheral *)p data:(NSData *)data {
     CBService *service = [self getServiceFromUUID:serviceUUID p:p];
     if (!service) {
-        DYCBDEBUG(@"Could not find service with UUID %@ on peripheral with UUID %@",serviceUUID,
+        DYCBDEBUGLN(@"Could not find service with UUID %@ on peripheral with UUID %@",serviceUUID,
                            p.identifier.UUIDString);
         return;
     }
     CBCharacteristic *characteristic = [self getCharacteristicFromUUID:characteristicUUID service:service];
     if (!characteristic) {
-        DYCBDEBUG(@"Could not find characteristic with UUID %@ on service with UUID %@ on peripheral with UUID %@",characteristicUUID,serviceUUID,
+        DYCBDEBUGLN(@"Could not find characteristic with UUID %@ on service with UUID %@ on peripheral with UUID %@",characteristicUUID,serviceUUID,
                            p.identifier.UUIDString);
         return;
     }else{
-        DYCBDEBUG(@"write to characteristic value:%@",characteristic.UUID);
+        DYCBDEBUGLN(@"write to characteristic value:%@",characteristic.UUID);
     }
     //Marked
     if ((characteristic.properties & CBCharacteristicPropertyWriteWithoutResponse) == 0) {
@@ -764,13 +870,13 @@
     data = [data subdataWithRange:NSMakeRange(0, [data length])];
     CBService *service = [self getServiceFromUUID:serviceUUID p:p];
     if (!service) {
-        DYCBDEBUG(@"Could not find service with UUID %@ on peripheral with UUID %@",serviceUUID,
+        DYCBDEBUGLN(@"Could not find service with UUID %@ on peripheral with UUID %@",serviceUUID,
                            p.identifier.UUIDString);
         return;
     }
     CBCharacteristic *characteristic = [self getCharacteristicFromUUID:characteristicUUID service:service];
     if (!characteristic) {
-        DYCBDEBUG(@"Could not find characteristic with UUID %@ on service with UUID %@ on peripheral with UUID %@",characteristicUUID,serviceUUID,
+        DYCBDEBUGLN(@"Could not find characteristic with UUID %@ on service with UUID %@ on peripheral with UUID %@",characteristicUUID,serviceUUID,
                            p.identifier.UUIDString);
         return;
     }
@@ -785,6 +891,9 @@
     }
 }
 
+//- (void)writeValue:(NSData *)data forDescriptor:(CBDescriptor *)descriptor;
+
+
 #pragma mark registerNotification
 
 - (void)registerNotification:(CBUUID *)serviceUUID characteristicUUID:(CBUUID *)characteristicUUID peripheral:(CBPeripheral *)p on:(BOOL)on {
@@ -792,18 +901,18 @@
     CBService *service = [self getServiceFromUUID:serviceUUID p:p];
     if (!service) {
         if (p.identifier == NULL) return; // zach ios6 added
-        DYCBDEBUG(@"Could not find service with UUID on peripheral with UUID \n");
+        DYCBDEBUGLN(@"Could not find service with UUID on peripheral with UUID \n");
         return;
     }
     CBCharacteristic *characteristic = [self getCharacteristicFromUUID:characteristicUUID service:service];
     if (!characteristic) {
         if (p.identifier == NULL) return; // zach ios6 added
-        DYCBDEBUG(@"Could not find characteristic with UUID  on service with UUID  on peripheral with UUID\n");
+        DYCBDEBUGLN(@"Could not find characteristic with UUID  on service with UUID  on peripheral with UUID\n");
         return;
     }
     
     [p setNotifyValue:on forCharacteristic:characteristic];
-    DYCBDEBUG(@"registerNotification ok - service:%@ characterstic:%@",service.UUID ,characteristic.UUID);
+    DYCBDEBUGLN(@"registerNotification ok - service:%@ characterstic:%@",service.UUID ,characteristic.UUID);
 }
 
 - (void)registerNotificationWithIntUUID:(UInt16)serviceUUID characteristicUUID:(UInt16)characteristicUUID peripheral:(CBPeripheral *)p on:(BOOL)on {
@@ -834,13 +943,13 @@
     NSData* data = [stringData dataUsingEncoding:NSUTF8StringEncoding];
     data = [data subdataWithRange:NSMakeRange(0, [data length])];
     [self writeUARTWithBin:data peripheral:connectedPeripheral];
-    DYCBDEBUG(@"write string= (%@)\n",stringData);
+    DYCBDEBUGLN(@"write string= (%@)\n",stringData);
     
 }
 
 - (void)writeUARTWithDoubleHexString:(NSString *)stringData {
     [self writeUARTWithBin:[self dobuleHexStringToHexData:stringData] peripheral:connectedPeripheral];
-    DYCBDEBUG(@"write string= (%@)\n",stringData);
+    DYCBDEBUGLN(@"write string= (%@)\n",stringData);
     
 }
 
@@ -848,10 +957,10 @@
     
     if ((_writeUartCharacteristicUUID128 == nil) && (_writeUartServiceUUID128 ==nil)) {
         [self writeValue:[self intUUIDToCBUUID:_writeUartServiceUUID] characteristicUUID:[self intUUIDToCBUUID:_writeUartCharacteristicUUID] peripheral:p data: data];
-        DYCBDEBUG(@"write bin SUUID= (%04x) CUUID=(%04x)\n",_writeUartServiceUUID,_writeUartCharacteristicUUID);
+        DYCBDEBUGLN(@"write bin SUUID= (%04x) CUUID=(%04x)\n",_writeUartServiceUUID,_writeUartCharacteristicUUID);
     }else {
         [self writeValue:_writeUartServiceUUID128 characteristicUUID:_writeUartCharacteristicUUID128 peripheral:p data: data];
-        DYCBDEBUG(@"write bin SUUID= (%@)   CUUID=(%@)\n",[_writeUartServiceUUID128 UUIDString],[_writeUartCharacteristicUUID128 UUIDString]);
+        DYCBDEBUGLN(@"write bin SUUID= (%@)   CUUID=(%@)\n",[_writeUartServiceUUID128 UUIDString],[_writeUartCharacteristicUUID128 UUIDString]);
         
     }
 
@@ -875,7 +984,7 @@
         /* uint16 bpm */
         bpm = CFSwapInt16LittleToHost(*(uint16_t *)(&reportData[1]));
     }
-    //DYCBDEBUG(@"bpm is %hu",bpm);
+    //DYCBDEBUGLN(@"bpm is %hu",bpm);
     return bpm;
 }
 //
@@ -890,7 +999,7 @@
     NSArray *storedDevices  = [[NSUserDefaults standardUserDefaults] arrayForKey:@"DYStoredDevices"];
     
     if (![storedDevices isKindOfClass:[NSArray class]]) {
-        DYCBDEBUG(@"No stored array to load");
+        DYCBDEBUGLN(@"No stored array to load");
         return;
     }
     
@@ -919,7 +1028,7 @@
     CFStringRef     uuidString      = NULL;
     
     if (![storedDevices isKindOfClass:[NSArray class]]) {
-        DYCBDEBUG(@"Can't find/create an array to store the uuid");
+        DYCBDEBUGLN(@"Can't find/create an array to store the uuid");
         return;
     }
     

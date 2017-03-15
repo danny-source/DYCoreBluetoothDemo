@@ -53,6 +53,8 @@
 
 #ifdef DYCOREBLUETOOTH_DEBUG
 #define DYCBDEBUG(...) NSLog(@"%s==%@", __PRETTY_FUNCTION__, [NSString stringWithFormat:__VA_ARGS__])
+#define DYCBDEBUGLN(...) NSLog(@"%s==%@\r\n", __PRETTY_FUNCTION__, [NSString stringWithFormat:__VA_ARGS__])
 #else
 #define DYCBDEBUG(...) do { } while (0)
+#define DYCBDEBUG(...LN) do { } while (0)
 #endif

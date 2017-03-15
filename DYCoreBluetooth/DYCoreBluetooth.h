@@ -27,13 +27,16 @@
 - (void)disconnect:(CBPeripheral*)peripheral;
 - (void)disconnectCurrentPeripheral;
 - (void)reConnect:(NSString*) strUUID;
+- (NSArray *)retrievePeripheralsWithServices:(NSArray *) strServiceUUID;
 
 - (DYCBCentralManagerState)getState;
 
 - (BOOL)isConnectedCurrentPeripheral;
 
+- (void)readValue:(CBUUID *) serviceUUID characteristicUUID:(CBUUID *) characteristicUUID peripheral:(CBPeripheral *)p;
+- (void)readValue:(CBUUID *) serviceUUID characteristicUUID:(CBUUID *) characteristicUUID descriptorUUID:(CBUUID *)descriptorUUID peripheral:(CBPeripheral *)p;
+- (void)writeValue:(CBUUID *) serviceUUID characteristicUUID:(CBUUID *) characteristicUUID descriptorUUID:(CBUUID *)descriptorUUID peripheral:(CBPeripheral *)p data:(NSData *)data;
 - (void)writeValue:(CBUUID *) serviceUUID characteristicUUID:(CBUUID *) characteristicUUID peripheral:(CBPeripheral *)p data:(NSData *)data;
-
 - (void)writeValueWithString:(CBUUID *) serviceUUID characteristicUUID:(CBUUID *) characteristicUUID peripheral:(CBPeripheral *)p data:(NSString *)strData;
 //
 - (void)setWriteUARTEnvironmentServiceUUID:(int)serviceUUID characteristicUUID:(int)characteristicUUID __attribute__((deprecated("TRY setWriteUARTEnvironmentServiceUUID128:characteristicUUID")));
@@ -47,6 +50,8 @@
 
 @property (strong, nonatomic) id                                delegate;
 @property (strong, nonatomic) CBPeripheral                      *connectedPeripheral;
+@property (strong, nonatomic) NSNumber                          *reConnectTimer;
+@property (strong, nonatomic) NSNumber                          *scanningTimer;
 @property BOOL isNeedScanningTimeout;
 //@property (atomic, copy) DYDidUpdateValueBlockType didUpdateValueCallback;
 //Tools
