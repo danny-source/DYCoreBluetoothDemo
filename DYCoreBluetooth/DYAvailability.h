@@ -56,5 +56,5 @@
 #define DYCBDEBUGLN(...) NSLog(@"%s==%@\r\n", __PRETTY_FUNCTION__, [NSString stringWithFormat:__VA_ARGS__])
 #else
 #define DYCBDEBUG(...) do { } while (0)
-#define DYCBDEBUG(...) do { } while (0)
+#define DYCBDEBUGLN(...) do { } while (0)
 #endif
