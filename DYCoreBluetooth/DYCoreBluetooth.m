@@ -32,6 +32,7 @@
     id delegate;
     CBCentralManager *_requireBLEPermission;
     BOOL    _isReConnectTimeout;
+    BOOL    _isScanning;
     
 }
 //
@@ -67,6 +68,7 @@
         _writeUartCharacteristicUUID=SERIAL_UART_TX_CHARACTERISTIC;
         _writeUartServiceUUID128 = nil;
         _writeUartCharacteristicUUID128 = nil;
+        _isScanning = NO;
         self.isNeedScanningTimeout = YES;
         self.reConnectTimer = @kRECONNECT_TIMEOUT;
         self.scanningTimer = @kSCAN_TIMEOUT;
@@ -202,6 +204,7 @@
 }
 
 - (void)startScanningForUUIDString:(NSString *)uuidString {
+    _isScanning = YES;
     NSDictionary *options =@{ CBCentralManagerScanOptionAllowDuplicatesKey : @NO };
     _foundPeripherals = [NSMutableArray array];
     _foundAdvertisementData = [NSMutableArray array];
@@ -224,6 +227,7 @@
 }
 
 - (void)stopScanning {
+    _isScanning = NO;
     if (CM!=NULL){
         [CM stopScan];
     }else{
@@ -234,6 +238,9 @@
     DYCBDEBUGLN(@"scanning is stop");
 }
 
+- (BOOL)isScanning {
+    return _isScanning;
+}
 
 - (void)scanTimeout:(NSTimer*)timer {
     DYCBDEBUGLN(@"scanning is timeout");
