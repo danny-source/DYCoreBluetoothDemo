@@ -521,6 +521,7 @@
  from didDiscoverService for loop.
  */
 - (void)printCharactersticInfo:(CBCharacteristic *)characteristic {
+#ifdef DYCOREBLUETOOTH_DEBUG
     DYCBDEBUGLN(@"+===characterstic info====");
     DYCBDEBUGLN(@" SERVICE UUID:%@",characteristic.service.UUID);
     DYCBDEBUGLN(@" Characteristic UUID:%@",characteristic.UUID);
@@ -528,15 +529,18 @@
     [self printProperties:characteristic.properties];
     //
     DYCBDEBUGLN(@" Description:%@",characteristic.description);
+#endif
 }
 
 - (void)printDescriptiorsInfo:(CBCharacteristic *)characteristic {
+#ifdef DYCOREBLUETOOTH_DEBUG
     DYCBDEBUGLN(@"++===descriptiors info====");
     DYCBDEBUGLN(@"++===number of %zd",characteristic.descriptors.count);
     for (CBDescriptor *descriptor in characteristic.descriptors) {
         DYCBDEBUGLN(@"+++Descriptiors UUID:%@",descriptor.UUID.UUIDString);
         DYCBDEBUGLN(@"+++%@",descriptor.description);
     }
+#endif
 }
 
 - (void)printProperties:(CBCharacteristicProperties)characteristicProperties {
