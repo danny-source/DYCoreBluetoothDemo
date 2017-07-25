@@ -42,6 +42,8 @@
 @synthesize reConnectTimer;
 @synthesize scanningTimer;
 @synthesize isNeedScanningTimeout;
+@synthesize peripheralMaxWriteForWrite;
+@synthesize peripheralMaxWriteForWriteWithoutResponse;
 //
 //@synthesize scanTimer;
 
@@ -72,6 +74,8 @@
         self.isNeedScanningTimeout = YES;
         self.reConnectTimer = @kRECONNECT_TIMEOUT;
         self.scanningTimer = @kSCAN_TIMEOUT;
+        self.peripheralMaxWriteForWriteWithoutResponse = nil;
+        self.peripheralMaxWriteForWrite = nil;
     }
     return self;
 }
@@ -380,6 +384,10 @@
     [UIApplication sharedApplication].idleTimerDisabled=YES;
 #endif
     DYCBDEBUGLN(@"================");
+    peripheralMaxWriteForWrite = [NSNumber numberWithUnsignedInteger:[connectedPeripheral maximumWriteValueLengthForType:CBCharacteristicWriteWithResponse]];
+    peripheralMaxWriteForWriteWithoutResponse = [NSNumber numberWithUnsignedInteger:[connectedPeripheral maximumWriteValueLengthForType:CBCharacteristicWriteWithoutResponse]];
+    
+    
 }
 
 - (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error {
@@ -394,11 +402,14 @@
     {
         [delegate didFailToConnect:peripheral error:error];
     }
+    connectedPeripheral = Nil;
+    peripheralMaxWriteForWrite = @0;
+    peripheralMaxWriteForWriteWithoutResponse = @0;
 }
 
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error {
     DYCBDEBUGLN(@"disconnect:%@\n",peripheral.name);
-    //if (!(peripheral.state == CBPeripheralStateConnected)) {
+
     if (_isReConnectTimeout) {
         //連線中或是已斷線的話都將通知傳至FailToConnect，讓重新連線Timeout能夠轉到這
         _isReConnectTimeout = NO;
@@ -409,6 +420,9 @@
     {
         [delegate didDisconnected:peripheral error:error];
     }
+    connectedPeripheral = Nil;
+    peripheralMaxWriteForWrite = @0;
+    peripheralMaxWriteForWriteWithoutResponse = @0;
 }
 
 - (void)centralManager:(CBCentralManager *)central didRetrieveConnectedPeripherals:(NSArray *)peripherals {
@@ -438,6 +452,8 @@
         {
             [delegate didRetrievePeripheral:connectedPeripheral];
         }
+        peripheralMaxWriteForWrite = [NSNumber numberWithUnsignedInteger:[connectedPeripheral maximumWriteValueLengthForType:CBCharacteristicWriteWithResponse]];
+        peripheralMaxWriteForWriteWithoutResponse = [NSNumber numberWithUnsignedInteger:[connectedPeripheral maximumWriteValueLengthForType:CBCharacteristicWriteWithoutResponse]];
     }
 }
 

@@ -54,6 +54,8 @@
 @property (strong, nonatomic) NSNumber                          *reConnectTimer;
 @property (strong, nonatomic) NSNumber                          *scanningTimer;
 @property BOOL isNeedScanningTimeout;
+@property (strong, nonatomic) NSNumber                          *peripheralMaxWriteForWrite;
+@property (strong, nonatomic) NSNumber                          *peripheralMaxWriteForWriteWithoutResponse;
 //@property (atomic, copy) DYDidUpdateValueBlockType didUpdateValueCallback;
 //Tools
 -(int) compareCBUUID:(CBUUID *) UUID1 UUID2:(CBUUID *)UUID2;
