@@ -70,7 +70,6 @@
  * @param cbUUID 觸發的Characteristics UUID
  * @param stringData Hex轉成String顯示
  * @param binaryData Bin RawData
- * @returns void
  */
 - (void)didUpdateValueWithPeripheral:(CBPeripheral*)peripheral Characteristics:(CBUUID*)cbUUID stringData:(NSString*)stringData binaryData:(NSData*)binaryData error:(NSError *)error;
 - (void)didUpdateState:(BOOL)isAvailable message:(NSString*)msg status:(DYCBCentralManagerState)status;
@@ -78,9 +77,8 @@
 
 
 /*! did connected
- * \param peripheral peripheral
- * \param error error code
- * \returns void
+ * @param peripheral peripheral
+ * @param error error code
  */
 - (void)didConnected:(CBPeripheral *)peripheral error:(NSError *)error;
 - (void)didDisconnected:(CBPeripheral *)peripheral error:(NSError *)error;
